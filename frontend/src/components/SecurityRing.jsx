@@ -118,12 +118,6 @@ export default function SecurityRing({ sections, overallScore }) {
     overallScore >= 50 ? "#f59e0b" :
     "#ef4444";
 
-  // pulse ring color based on worst status
-  const worstStatus =
-    sections.some((s) => s.status === "critical") ? "critical" :
-    sections.some((s) => s.status === "warning")  ? "warning"  :
-    "ok";
-
   function handleMouseEnter(e, section, startDeg, endDeg) {
     setHovered(section);
     const { x, y } = iconPosition(startDeg, endDeg);
@@ -165,23 +159,17 @@ export default function SecurityRing({ sections, overallScore }) {
             </feMerge>
           </filter>
 
+          {/* drop shadow for center circle */}
+          <filter id="centre-shadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="18" floodColor="#000" floodOpacity="0.7" />
+          </filter>
+
           {/* radial for centre circle */}
           <radialGradient id="centre-grad" cx="50%" cy="40%" r="60%">
             <stop offset="0%" stopColor="#1e293b" />
             <stop offset="100%" stopColor="#0f172a" />
           </radialGradient>
         </defs>
-
-        {/* outer pulse ring */}
-        <circle
-          cx={CX} cy={CY} r={OUTER_R + 18}
-          fill="none"
-          stroke={STATUS[worstStatus].color}
-          strokeWidth="1.5"
-          strokeDasharray="4 6"
-          opacity="0.35"
-          className="ring-pulse"
-        />
 
         {/* segments */}
         {sections.map((section, i) => {
@@ -282,6 +270,8 @@ export default function SecurityRing({ sections, overallScore }) {
           );
         })}
 
+        {/* centre circle shadow layer */}
+        <circle cx={CX} cy={CY} r={INNER_R - 10} fill="#000" opacity="0.6" filter="url(#centre-shadow)" />
         {/* centre circle */}
         <circle cx={CX} cy={CY} r={INNER_R - 10} fill="url(#centre-grad)" />
         <circle

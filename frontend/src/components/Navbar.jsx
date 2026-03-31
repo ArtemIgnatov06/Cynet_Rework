@@ -1,14 +1,15 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import cynetLogo from "../assets/cynet-logo.png";
 import "./Navbar.css";
 
 const NAV_LINKS = [
-  { path: "/",             label: "Overview"    },
-  { path: "/section/endpoints", label: "Endpoints"   },
-  { path: "/section/network",   label: "Network"     },
-  { path: "/section/users",     label: "Users"       },
-  { path: "/section/email",     label: "Email"       },
-  { path: "/section/saas",      label: "SaaS & Cloud" },
-  { path: "/section/mobile",    label: "Mobile"      },
+  { path: "/",                   label: "Overview"    },
+  { path: "/section/endpoints",  label: "Endpoints"   },
+  { path: "/section/network",    label: "Network"     },
+  { path: "/section/users",      label: "Users"       },
+  { path: "/section/email",      label: "Email"       },
+  { path: "/section/saas",       label: "SaaS & Cloud" },
+  { path: "/section/mobile",     label: "Mobile"      },
 ];
 
 export default function Navbar() {
@@ -18,9 +19,8 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar__brand" onClick={() => navigate("/")}>
-        <span className="navbar__shield">⬡</span>
+        <img src={cynetLogo} alt="Cynet" className="navbar__logo" />
         <span className="navbar__name">CYNET</span>
-        <span className="navbar__tag">Protected</span>
       </div>
 
       <ul className="navbar__links">
@@ -35,13 +35,6 @@ export default function Navbar() {
           </li>
         ))}
       </ul>
-
-      <div className="navbar__right">
-        <div className="navbar__live">
-          <span className="navbar__live-dot" />
-          Live
-        </div>
-      </div>
     </nav>
   );
 }

@@ -13,17 +13,6 @@
   overflow: visible;
 }
 
-/* ─── Pulse animation ─────────────────────────────────────────────────────── */
-.ring-pulse {
-  animation: ring-rotate 30s linear infinite;
-  transform-origin: 260px 260px;
-}
-
-@keyframes ring-rotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
 /* ─── Segment ─────────────────────────────────────────────────────────────── */
 .ring-segment path {
   transition: opacity 0.25s ease, filter 0.25s ease;
