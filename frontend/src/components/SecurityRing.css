@@ -1,0 +1,171 @@
+/* ─── Ring wrapper ─────────────────────────────────────────────────────────── */
+.security-ring-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.security-ring-svg {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  overflow: visible;
+}
+
+/* ─── Pulse animation ─────────────────────────────────────────────────────── */
+.ring-pulse {
+  animation: ring-rotate 30s linear infinite;
+  transform-origin: 260px 260px;
+}
+
+@keyframes ring-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Segment ─────────────────────────────────────────────────────────────── */
+.ring-segment path {
+  transition: opacity 0.25s ease, filter 0.25s ease;
+}
+
+.ring-segment--hovered path:first-of-type {
+  filter: brightness(1.15);
+}
+
+.ring-segment__label {
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: fill 0.2s;
+}
+
+.ring-segment__icon {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─── Score text ──────────────────────────────────────────────────────────── */
+.ring-score-number {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.ring-score-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ─── Tooltip ─────────────────────────────────────────────────────────────── */
+.ring-tooltip {
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: #cbd5e1;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
+.ring-tooltip__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-left: 3px solid;
+  padding-left: 8px;
+  margin-bottom: 8px;
+}
+
+.ring-tooltip__icon {
+  font-size: 16px;
+}
+
+.ring-tooltip__title {
+  font-weight: 700;
+  color: #f1f5f9;
+  flex: 1;
+}
+
+.ring-tooltip__badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.ring-tooltip__score {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.ring-tooltip__score strong {
+  color: #e2e8f0;
+}
+
+.ring-tooltip__issues {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.ring-tooltip__issue {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ring-tooltip__sev {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ring-tooltip__sev--critical {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+}
+
+.ring-tooltip__sev--high {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fcd34d;
+}
+
+.ring-tooltip__sev--medium {
+  background: rgba(99, 102, 241, 0.25);
+  color: #a5b4fc;
+}
+
+.ring-tooltip__more {
+  font-size: 10px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.ring-tooltip__hint {
+  font-size: 10px;
+  color: #475569;
+  letter-spacing: 0.04em;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 6px;
+}
