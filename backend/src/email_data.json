@@ -1,0 +1,44 @@
+{
+  "email": {
+    "connection": {
+      "connected": true,
+      "provider": "office365"
+    },
+    "attack_level": "yellow",
+    "blocked_emails": [
+      {
+        "id": 1,
+        "sender": "invoice@spoofed-domain.net",
+        "subject": "Pending invoice",
+        "reason": "Suspicious attachment",
+        "severity": "warning",
+        "status": "quarantined",
+        "time": "2m ago"
+      },
+      {
+        "id": 2,
+        "sender": "sharepoint@external-share.net",
+        "subject": "Document shared with you",
+        "reason": "Suspicious external link",
+        "severity": "warning",
+        "status": "blocked",
+        "time": "5m ago"
+      },
+      {
+        "id": 3,
+        "sender": "helpdesk@company-reset.co",
+        "subject": "Password reset required",
+        "reason": "Suspicious password reset lure",
+        "severity": "warning",
+        "status": "blocked",
+        "time": "8m ago"
+      }
+    ],
+    "stats": {
+      "total": 3,
+      "critical": 0,
+      "warning": 3,
+      "safe": 0
+    }
+  }
+}
