@@ -32,6 +32,8 @@ export default function Dashboard() {
   const warningCount  = data.sections.filter((s) => s.status === "warning").length;
   const okCount       = data.sections.filter((s) => s.status === "ok").length;
 
+  const overallStatus = criticalCount > 0 ? "critical" : warningCount > 0 ? "warning" : "ok";
+
   const updated = new Date(data.lastUpdated).toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
@@ -39,6 +41,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard">
+      <div className={`screen-overlay screen-overlay--${overallStatus}`} aria-hidden="true" />
       {/* ── Header bar ─────────────────────────────────────────────── */}
       <header className="dashboard__header">
         <div className="dashboard__header-left">
