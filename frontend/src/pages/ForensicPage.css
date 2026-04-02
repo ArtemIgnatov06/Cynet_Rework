@@ -1,0 +1,181 @@
+/* ─── Shared page header ──────────────────────────────────────────────────── */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* ─── Page wrapper ────────────────────────────────────────────────────────── */
+.forensic-page {
+  padding: 88px 32px 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ─── Sub-tabs ────────────────────────────────────────────────────────────── */
+.fp-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 24px;
+}
+
+.fp-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 10px 20px;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.03em;
+}
+
+.fp-tab:hover {
+  color: #cbd5e1;
+}
+
+.fp-tab--active {
+  color: #e2e8f0;
+  border-bottom-color: #0ea5e9;
+}
+
+/* ─── Content area ────────────────────────────────────────────────────────── */
+.fp-content {
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fp-table-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.fp-badge {
+  background: rgba(14, 165, 233, 0.15);
+  color: #7dd3fc;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.fp-count {
+  margin-left: auto;
+  color: #475569;
+  font-size: 12px;
+}
+
+.fp-loading {
+  padding: 48px;
+  text-align: center;
+  color: #475569;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
+
+/* ─── Table ───────────────────────────────────────────────────────────────── */
+.fp-table-wrap {
+  overflow-x: auto;
+}
+
+.fp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+}
+
+.fp-table thead tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fp-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.fp-table td {
+  padding: 12px 16px;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+}
+
+.fp-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.fp-table__filename {
+  color: #7dd3fc !important;
+  font-size: 12px;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fp-table__link {
+  color: #7dd3fc !important;
+  cursor: pointer;
+}
+
+.fp-table__mono {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 11px;
+  color: #94a3b8 !important;
+}
+
+.fp-ok {
+  color: #475569;
+}
+
+/* ─── Risk badge ──────────────────────────────────────────────────────────── */
+.risk-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ─── Status pill ─────────────────────────────────────────────────────────── */
+.status-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-pill--online     { background: rgba(16,185,129,0.12); color: #34d399; }
+.status-pill--offline    { background: rgba(100,116,139,0.12); color: #64748b; }
+.status-pill--active     { background: rgba(16,185,129,0.12); color: #34d399; }
+.status-pill--established { background: rgba(14,165,233,0.12); color: #7dd3fc; }

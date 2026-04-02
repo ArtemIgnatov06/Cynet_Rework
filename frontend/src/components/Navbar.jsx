@@ -1,22 +1,24 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { IconDownload, IconSettings, IconUser } from "./Icons";
 import "./Navbar.css";
 
 const NAV_LINKS = [
-  { path: "/",                   label: "Overview"    },
-  { path: "/section/endpoints",  label: "Endpoints"   },
-  { path: "/section/network",    label: "Network"     },
-  { path: "/section/users",      label: "Users"       },
-  { path: "/section/email",      label: "Email"       },
-  { path: "/section/saas",       label: "SaaS & Cloud" },
-  { path: "/section/mobile",     label: "Mobile"      },
+  { path: "/",           label: "Main"       },
+  { path: "/actions",    label: "Actions"    },
+  { path: "/forensic",   label: "Forensic"   },
+  { path: "/statistics", label: "Statistics" },
 ];
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
+  const isActive = (path) =>
+    path === "/" ? pathname === "/" : pathname.startsWith(path);
+
   return (
     <nav className="navbar">
+      {/* ── Logo ── */}
       <div className="navbar__brand" onClick={() => navigate("/")}>
         <svg width="98" height="24" viewBox="0 0 98 24" xmlns="http://www.w3.org/2000/svg" className="navbar__logo-svg" aria-label="Cynet">
           <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d="M16.8828 23.1666H17.1288C18.7211 23.1514 20.2953 22.8443 21.7655 22.2642C23.2838 21.669 24.666 20.7951 25.8282 19.6919C27.2885 18.3081 28.3526 16.5963 28.9207 14.7158C28.7847 14.9509 28.6307 15.1746 28.4646 15.3907V15.5423H28.3466C28.1626 15.7679 27.9666 15.984 27.7525 16.1869C26.4083 17.455 24.594 18.1697 22.6977 18.1773C20.9874 18.1924 19.3412 17.5593 18.127 16.42L12.9481 11.5122L17.8829 6.8376C19.1871 5.59217 20.9654 4.89458 22.8177 4.90026C24.672 4.89647 26.4463 5.59406 27.7545 6.8376C27.9866 7.0556 28.1986 7.29065 28.3946 7.53519H28.4666V7.63187C28.6187 7.83091 28.7627 8.03564 28.8907 8.24984C28.3086 6.41298 27.2604 4.73913 25.8302 3.37997C23.5498 1.20757 20.4473 -0.00752749 17.2168 5.50359e-05C13.9863 -0.00942312 10.8878 1.20568 8.6074 3.37617L0 11.5388L9.03347 20.0994C11.1238 22.0595 13.9443 23.1609 16.8848 23.1666H16.8828Z"/>
@@ -31,11 +33,12 @@ export default function Navbar() {
         </svg>
       </div>
 
+      {/* ── Nav links ── */}
       <ul className="navbar__links">
         {NAV_LINKS.map(({ path, label }) => (
           <li key={path}>
             <button
-              className={`navbar__link ${pathname === path ? "navbar__link--active" : ""}`}
+              className={`navbar__link ${isActive(path) ? "navbar__link--active" : ""}`}
               onClick={() => navigate(path)}
             >
               {label}
@@ -43,6 +46,23 @@ export default function Navbar() {
           </li>
         ))}
       </ul>
+
+      {/* ── Right controls ── */}
+      <div className="navbar__controls">
+        <button className="navbar__ctrl-btn navbar__download-btn" title="Download Cynet Agent">
+          <IconDownload size={16} />
+          <span>Download</span>
+        </button>
+
+        <button className="navbar__ctrl-icon" title="Settings">
+          <IconSettings size={17} />
+        </button>
+
+        <button className="navbar__profile" title="Profile">
+          <IconUser size={16} color="#0ea5e9" />
+          <span className="navbar__profile-name">Adeline Internal</span>
+        </button>
+      </div>
     </nav>
   );
 }

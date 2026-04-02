@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   padding: 0 24px;
-  gap: 32px;
+  gap: 0;
   background: rgba(17, 24, 39, 0.96);
   border-bottom: 1px solid rgba(14, 165, 233, 0.35);
   backdrop-filter: blur(16px);
@@ -19,9 +19,9 @@
 .navbar__brand {
   display: flex;
   align-items: center;
-  gap: 10px;
   cursor: pointer;
   flex-shrink: 0;
+  margin-right: 32px;
 }
 
 .navbar__logo-svg {
@@ -35,7 +35,7 @@
 .navbar__links {
   list-style: none;
   display: flex;
-  gap: 4px;
+  gap: 2px;
   margin: 0;
   padding: 0;
   flex: 1;
@@ -50,9 +50,9 @@
   font-weight: 500;
   letter-spacing: 0.02em;
   color: #6b7280;
-  padding: 6px 14px;
+  padding: 6px 16px;
   border-radius: 6px;
-  transition: color 0.2s, background 0.2s;
+  transition: color 0.15s, background 0.15s;
 }
 
 .navbar__link:hover {
@@ -64,4 +64,73 @@
   color: #e2e8f0;
   background: rgba(14, 165, 233, 0.12);
   border: 1px solid rgba(14, 165, 233, 0.22);
+}
+
+/* ─── Right controls ──────────────────────────────────────────────────────── */
+.navbar__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.navbar__ctrl-btn,
+.navbar__ctrl-icon,
+.navbar__profile {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+  color: #94a3b8;
+}
+
+.navbar__ctrl-btn:hover,
+.navbar__ctrl-icon:hover,
+.navbar__profile:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+/* Download button — slightly styled */
+.navbar__download-btn {
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  background: rgba(14, 165, 233, 0.08);
+  color: #7dd3fc;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.navbar__download-btn:hover {
+  background: rgba(14, 165, 233, 0.15);
+  color: #bae6fd;
+  border-color: rgba(14, 165, 233, 0.5);
+}
+
+.navbar__ctrl-icon {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* Divider before profile */
+.navbar__profile {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  margin-left: 4px;
+  padding-left: 16px;
+  border-radius: 0;
+  gap: 8px;
+}
+
+.navbar__profile-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
 }

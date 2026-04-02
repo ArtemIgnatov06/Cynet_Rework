@@ -1,0 +1,112 @@
+/* Reuses .page-header/.page-title from ForensicPage.css via global scope */
+/* Reuses .fp-tabs/.fp-tab/.fp-content/.fp-table-meta/.fp-badge/.fp-count/.fp-loading/.fp-table-wrap from ForensicPage.css */
+
+.actions-page {
+  padding: 88px 32px 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ─── Actions table ───────────────────────────────────────────────────────── */
+.ap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+}
+
+.ap-table thead tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ap-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.ap-table td {
+  padding: 12px 16px;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+}
+
+.ap-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.ap-table__filename {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #7dd3fc !important;
+  font-size: 11px;
+}
+
+.ap-table__link {
+  color: #7dd3fc !important;
+  cursor: pointer;
+}
+
+.ap-table__link-muted {
+  color: #7dd3fc !important;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.ap-table__mono {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 11px;
+  color: #94a3b8 !important;
+}
+
+.ap-table__info {
+  font-size: 11px;
+  color: #64748b !important;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Status badge ────────────────────────────────────────────────────────── */
+.ap-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ap-status--ok      { background: rgba(16,185,129,0.12); color: #34d399; }
+.ap-status--warn    { background: rgba(245,158,11,0.12); color: #fcd34d; }
+.ap-status--err     { background: rgba(239,68,68,0.12);  color: #fca5a5; }
+.ap-status--neutral { background: rgba(100,116,139,0.12); color: #94a3b8; }
+
+/* ─── Toggle ──────────────────────────────────────────────────────────────── */
+.ap-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ap-toggle--on  { background: rgba(16,185,129,0.12); color: #34d399; }
+.ap-toggle--off { background: rgba(100,116,139,0.1); color: #64748b; }
+
+/* ─── Empty state ─────────────────────────────────────────────────────────── */
+.ap-empty {
+  padding: 48px;
+  text-align: center;
+  color: #475569;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
