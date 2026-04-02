@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconDownload, IconSettings, IconUser } from "./Icons";
 import "./Navbar.css";
@@ -5,16 +6,42 @@ import "./Navbar.css";
 const NAV_LINKS = [
   { path: "/",           label: "Main"       },
   { path: "/actions",    label: "Actions"    },
-  { path: "/forensic",   label: "Forensic"   },
+  { path: "/system",     label: "System"     },
   { path: "/statistics", label: "Statistics" },
+];
+
+const DOWNLOAD_ITEMS = [
+  {
+    id: "dist",
+    icon: "↓",
+    title: "Cynet Distribution Tool",
+    desc: "For installing the Cynet agent on multiple endpoints on the network",
+  },
+  {
+    id: "pkg",
+    icon: "□",
+    title: "Cynet Package",
+    desc: "For SCCM distribution or installing the Cynet agent on a single endpoint",
+  },
 ];
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [dlOpen, setDlOpen] = useState(false);
+  const dlRef = useRef(null);
 
   const isActive = (path) =>
     path === "/" ? pathname === "/" : pathname.startsWith(path);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (dlRef.current && !dlRef.current.contains(e.target)) setDlOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
     <nav className="navbar">
@@ -49,10 +76,36 @@ export default function Navbar() {
 
       {/* ── Right controls ── */}
       <div className="navbar__controls">
-        <button className="navbar__ctrl-btn navbar__download-btn" title="Download Cynet Agent">
-          <IconDownload size={16} />
-          <span>Download</span>
-        </button>
+
+        {/* Download with dropdown */}
+        <div className="navbar__dl-wrap" ref={dlRef}>
+          <button
+            className={`navbar__ctrl-btn navbar__download-btn ${dlOpen ? "navbar__download-btn--open" : ""}`}
+            onClick={() => setDlOpen((v) => !v)}
+          >
+            <IconDownload size={16} />
+            <span>Download</span>
+          </button>
+
+          {dlOpen && (
+            <div className="navbar__dl-dropdown">
+              <div className="navbar__dl-header">
+                <span className="navbar__dl-title">Adeline Internal</span>
+                <IconDownload size={14} color="#94a3b8" />
+              </div>
+              {DOWNLOAD_ITEMS.map((item) => (
+                <div key={item.id} className="navbar__dl-item">
+                  <div className="navbar__dl-item-icon">{item.icon}</div>
+                  <div className="navbar__dl-item-body">
+                    <span className="navbar__dl-item-name">{item.title}</span>
+                    <span className="navbar__dl-item-desc">{item.desc}</span>
+                  </div>
+                  <button className="navbar__dl-item-btn">Download</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         <button className="navbar__ctrl-icon" title="Settings">
           <IconSettings size={17} />

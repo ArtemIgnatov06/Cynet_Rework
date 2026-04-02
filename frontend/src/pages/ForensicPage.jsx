@@ -172,7 +172,7 @@ export default function ForensicPage() {
   return (
     <div className="forensic-page">
       <div className="page-header">
-        <h1 className="page-title">Forensic</h1>
+        <h1 className="page-title">System</h1>
       </div>
 
       {/* Sub-tabs */}

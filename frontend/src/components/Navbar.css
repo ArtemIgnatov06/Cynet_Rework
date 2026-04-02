@@ -134,3 +134,104 @@
   color: #94a3b8;
   white-space: nowrap;
 }
+
+/* ─── Download dropdown ───────────────────────────────────────────────────── */
+.navbar__dl-wrap {
+  position: relative;
+}
+
+.navbar__download-btn--open {
+  background: rgba(14, 165, 233, 0.2) !important;
+  border-color: rgba(14, 165, 233, 0.6) !important;
+}
+
+.navbar__dl-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 380px;
+  background: #1a2235;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.navbar__dl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-family: 'Inter', sans-serif;
+}
+
+.navbar__dl-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.navbar__dl-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s;
+}
+
+.navbar__dl-item:last-child { border-bottom: none; }
+.navbar__dl-item:hover { background: rgba(255, 255, 255, 0.03); }
+
+.navbar__dl-item-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #7dd3fc;
+  flex-shrink: 0;
+}
+
+.navbar__dl-item-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.navbar__dl-item-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.navbar__dl-item-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.navbar__dl-item-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.navbar__dl-item-btn:hover { background: #1d4ed8; }

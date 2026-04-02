@@ -15,7 +15,7 @@ export default function App() {
           <Route path="/"              element={<Dashboard />}    />
           <Route path="/section/:id"  element={<SectionPage />}  />
           <Route path="/actions"      element={<ActionsPage />}  />
-          <Route path="/forensic"     element={<ForensicPage />} />
+          <Route path="/system"       element={<ForensicPage />} />
           <Route path="/statistics"   element={<StatisticsPage />} />
           <Route path="*"             element={<Navigate to="/" replace />} />
         </Routes>
