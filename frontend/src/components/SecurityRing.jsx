@@ -114,9 +114,9 @@ export default function SecurityRing({ sections, overallScore }) {
   const degPerSection = 360 / totalSections;
 
   const scoreColor =
-    overallScore >= 80 ? "#22c55e" :
-    overallScore >= 50 ? "#f59e0b" :
-    "#ef4444";
+    sections.some((s) => s.status === "critical") ? "#ef4444" :
+    sections.some((s) => s.status === "warning")  ? "#f59e0b" :
+    "#22c55e";
 
   function handleMouseEnter(e, section, startDeg, endDeg) {
     setHovered(section);
