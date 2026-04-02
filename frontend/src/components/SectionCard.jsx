@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { SectionIcon } from "./Icons";
 import "./SectionCard.css";
 
 const STATUS_LABELS = {
@@ -21,7 +22,9 @@ export default function SectionCard({ section }) {
       aria-label={`${section.label}: ${cfg.label}`}
     >
       <div className="section-card__top">
-        <span className="section-card__icon">{section.icon}</span>
+        <span className="section-card__icon">
+          <SectionIcon id={section.id} size={18} color="#94a3b8" />
+        </span>
         <span className="section-card__label">{section.label}</span>
         <span className="section-card__dot" style={{ background: cfg.dot }} />
       </div>

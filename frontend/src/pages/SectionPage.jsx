@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { SectionIcon } from "../components/Icons";
 import { useSecurityData } from "../hooks/useSecurityData";
 import "./SectionPage.css";
 
@@ -43,7 +44,9 @@ export default function SectionPage() {
       {/* ── Hero ────────────────────────────────────────────────────── */}
       <div className="section-page__hero">
         <div className="section-page__hero-left">
-          <span className="section-page__hero-icon">{section.icon}</span>
+          <span className="section-page__hero-icon">
+            <SectionIcon id={section.id} size={28} color="#0ea5e9" />
+          </span>
           <div>
             <h1 className="section-page__hero-title">{section.label}</h1>
             <span

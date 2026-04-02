@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import SecurityRing from "../components/SecurityRing";
 import SectionCard from "../components/SectionCard";
+import { SectionIcon } from "../components/Icons";
 import { useSecurityData } from "../hooks/useSecurityData";
 import "./Dashboard.css";
 
@@ -104,7 +105,7 @@ export default function Dashboard() {
           ) : (
             data.sections
               .flatMap((s) =>
-                s.issues.map((issue) => ({ ...issue, sectionLabel: s.label, sectionIcon: s.icon }))
+                s.issues.map((issue) => ({ ...issue, sectionLabel: s.label, sectionId: s.id }))
               )
               .sort((a, b) => {
                 const order = { critical: 0, high: 1, medium: 2, low: 3 };
@@ -121,7 +122,8 @@ export default function Dashboard() {
                 >
                   <span className="issue-row__sev">{issue.severity}</span>
                   <span className="issue-row__section">
-                    {issue.sectionIcon} {issue.sectionLabel}
+                    <SectionIcon id={issue.sectionId} size={13} color="#64748b" />
+                    {issue.sectionLabel}
                   </span>
                   <span className="issue-row__title">{issue.title}</span>
                   <span className="issue-row__desc">{issue.description}</span>

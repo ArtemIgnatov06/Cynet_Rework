@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { SectionIcon, SectionIconSVG } from "./Icons";
 import "./SecurityRing.css";
 
 // ─── STATUS CONFIG ───────────────────────────────────────────────────────────
@@ -40,8 +41,8 @@ function buildArcPath(startDeg, endDeg, outerR, innerR) {
 }
 
 function labelPosition(startDeg, endDeg) {
-  const mid  = (startDeg + endDeg) / 2;
-  const r    = (OUTER_R + INNER_R) / 2 + 20;
+  const mid = (startDeg + endDeg) / 2;
+  const r   = OUTER_R + 26;   // outside the ring arc
   return polarToXY(mid, r);
 }
 
@@ -70,7 +71,9 @@ function Tooltip({ section, x, y, svgWidth }) {
     >
       <div className="ring-tooltip" xmlns="http://www.w3.org/1999/xhtml">
         <div className="ring-tooltip__header" style={{ borderColor: cfg.color }}>
-          <span className="ring-tooltip__icon">{section.icon}</span>
+          <span className="ring-tooltip__icon">
+            <SectionIcon id={section.id} size={16} color={cfg.color} />
+          </span>
           <span className="ring-tooltip__title">{section.label}</span>
           <span className="ring-tooltip__badge" style={{ background: cfg.color }}>
             {cfg.label}
@@ -136,7 +139,7 @@ export default function SecurityRing({ sections, overallScore }) {
     <div className="security-ring-wrapper">
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${CX * 2} ${CY * 2}`}
+        viewBox={`-30 -30 ${CX * 2 + 60} ${CY * 2 + 60}`}
         className="security-ring-svg"
         aria-label="Security health overview"
       >
@@ -221,15 +224,12 @@ export default function SecurityRing({ sections, overallScore }) {
               />
 
               {/* icon */}
-              <text
-                x={icnPos.x}
-                y={icnPos.y + 6}
-                textAnchor="middle"
-                fontSize="22"
-                className="ring-segment__icon"
-              >
-                {section.icon}
-              </text>
+              <SectionIconSVG
+                id={section.id}
+                cx={icnPos.x}
+                cy={icnPos.y}
+                size={18}
+              />
 
               {/* label outside ring */}
               <text
