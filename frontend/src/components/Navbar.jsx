@@ -112,7 +112,7 @@ export default function Navbar() {
         <button
           className="navbar__helpbot-btn"
           title="Open Help Bot"
-          onClick={() => navigate("/help-bot")}
+          onClick={() => window.dispatchEvent(new CustomEvent("toggle-chat-widget"))}
         >
           <span className="navbar__helpbot-icon">?</span>
           <span>Help-bot</span>

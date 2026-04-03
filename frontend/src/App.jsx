@@ -6,6 +6,8 @@ import ActionsPage from "./pages/ActionsPage";
 import ForensicPage from "./pages/ForensicPage";
 import StatisticsPage from "./pages/StatisticsPage";
 import SettingsPage from "./pages/SettingsPage";
+import ChatPage from "./pages/ChatPage";
+import ChatWidget from "./components/ChatWidget";
 
 export default function App() {
   return (
@@ -19,9 +21,11 @@ export default function App() {
           <Route path="/system"       element={<ForensicPage />} />
           <Route path="/statistics"   element={<StatisticsPage />} />
           <Route path="/settings"     element={<SettingsPage />}  />
+          <Route path="/help-bot"     element={<ChatPage />}      />
           <Route path="*"             element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      <ChatWidget />
     </BrowserRouter>
   );
 }
