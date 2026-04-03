@@ -240,3 +240,23 @@
 }
 
 .navbar__dl-item-btn:hover { background: #1d4ed8; }
+
+.navbar__helpbot-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  color: #e2e8f0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.navbar__helpbot-btn:hover {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.25);
+  transform: translateY(-1px);
+}
