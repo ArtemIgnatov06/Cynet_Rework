@@ -74,7 +74,50 @@
   flex-shrink: 0;
 }
 
+/* Base button style for shared sizing */
 .navbar__ctrl-btn,
+.navbar__helpbot-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;          /* Forced identical height */
+  padding: 0 14px;       /* Identical horizontal padding */
+  border-radius: 8px;    /* Shared corner roundness */
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+/* Download button specific colors */
+.navbar__download-btn {
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  background: rgba(14, 165, 233, 0.08);
+  color: #7dd3fc;
+}
+
+.navbar__download-btn:hover {
+  background: rgba(14, 165, 233, 0.15);
+  color: #bae6fd;
+  border-color: rgba(14, 165, 233, 0.5);
+}
+
+/* Help-bot specific colors */
+.navbar__helpbot-btn {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+.navbar__helpbot-btn:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Other Icons and Profile */
 .navbar__ctrl-icon,
 .navbar__profile {
   background: none;
@@ -90,26 +133,10 @@
   color: #94a3b8;
 }
 
-.navbar__ctrl-btn:hover,
 .navbar__ctrl-icon:hover,
 .navbar__profile:hover {
   background: rgba(255, 255, 255, 0.06);
   color: #e2e8f0;
-}
-
-/* Download button — slightly styled */
-.navbar__download-btn {
-  border: 1px solid rgba(14, 165, 233, 0.3);
-  background: rgba(14, 165, 233, 0.08);
-  color: #7dd3fc;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.navbar__download-btn:hover {
-  background: rgba(14, 165, 233, 0.15);
-  color: #bae6fd;
-  border-color: rgba(14, 165, 233, 0.5);
 }
 
 .navbar__ctrl-icon {
@@ -241,22 +268,17 @@
 
 .navbar__dl-item-btn:hover { background: #1d4ed8; }
 
-.navbar__helpbot-btn {
+.navbar__helpbot-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(14, 165, 233, 0.35);
-  color: #e2e8f0;
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.navbar__helpbot-btn:hover {
-  border-color: #0ea5e9;
-  box-shadow: 0 0 12px rgba(14, 165, 233, 0.25);
-  transform: translateY(-1px);
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #64748b;
+  flex-shrink: 0;
 }
