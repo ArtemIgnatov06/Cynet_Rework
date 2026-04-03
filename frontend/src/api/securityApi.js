@@ -389,6 +389,32 @@ export async function fetchStatsData() {
   return structuredClone(MOCK_STATS_DATA);
 }
 
+// ─── MOCK: SETTINGS / GROUPS ─────────────────────────────────────────────────
+const MOCK_GROUPS_DATA = [
+  { id: "g-1",  name: "Adeline_Endpoint_WIN",           os: "windows", endpoints: 7,  eppBestPractice: true,  lastModified: "2025-07-14T10:18:04Z" },
+  { id: "g-2",  name: "Adeline_Endpoint_MAC",           os: "mac",     endpoints: 7,  eppBestPractice: true,  lastModified: "2025-07-14T10:06:05Z" },
+  { id: "g-3",  name: "Emir Testing WIN",               os: "windows", endpoints: 1,  eppBestPractice: true,  lastModified: "2025-10-22T08:34:22Z" },
+  { id: "g-4",  name: "Manually Installed Agents - Linux", os: "linux", endpoints: 0, eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-5",  name: "Manually Installed Agents",      os: "windows", endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-6",  name: "Out of Range Agents",            os: "windows", endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-7",  name: "Windows Workstations",           os: "windows", endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-8",  name: "Windows Servers",                os: "windows", endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-9",  name: "Linux Workstations",             os: "linux",   endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-10", name: "Linux Servers",                  os: "linux",   endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-11", name: "Mac Workstations",               os: "mac",     endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-12", name: "Critical Assets",                os: "windows", endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-13", name: "Manually Installed Agents - MAC",os: "mac",     endpoints: 0,  eppBestPractice: true,  lastModified: "2025-07-13T09:31:02Z" },
+  { id: "g-14", name: "All",                            os: "windows", endpoints: 15, eppBestPractice: false, lastModified: "2025-07-13T09:31:02Z" },
+];
+
+export async function fetchGroupsData() {
+  // TODO: replace with real call
+  // const res = await fetch('/api/v1/settings/groups');
+  // return res.json();
+  await delay(250);
+  return structuredClone(MOCK_GROUPS_DATA);
+}
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function delay(ms) {
   return new Promise((r) => setTimeout(r, ms));

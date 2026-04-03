@@ -1,4 +1,5 @@
 import { useState } from "react";
+import GroupsTab from "./settings/GroupsTab";
 import "./SettingsPage.css";
 
 const TABS = ["Groups", "Allow List", "Integrations", "Alerts", "User Activity (UBA)", "Profiles"];
@@ -60,7 +61,7 @@ export default function SettingsPage() {
           <h1 className="settings-content__title">{active}</h1>
         </div>
         <div className="settings-content__body">
-          {/* Content will be added per tab */}
+          {active === "Groups" ? <GroupsTab /> : null}
         </div>
       </div>
     </div>
