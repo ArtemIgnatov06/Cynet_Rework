@@ -107,7 +107,11 @@ export default function Navbar() {
           )}
         </div>
 
-        <button className="navbar__ctrl-icon" title="Settings">
+        <button
+          className={`navbar__ctrl-icon ${pathname.startsWith("/settings") ? "navbar__ctrl-icon--active" : ""}`}
+          title="Settings"
+          onClick={() => navigate("/settings")}
+        >
           <IconSettings size={17} />
         </button>
 

@@ -5,6 +5,7 @@ import SectionPage from "./pages/SectionPage";
 import ActionsPage from "./pages/ActionsPage";
 import ForensicPage from "./pages/ForensicPage";
 import StatisticsPage from "./pages/StatisticsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/actions"      element={<ActionsPage />}  />
           <Route path="/system"       element={<ForensicPage />} />
           <Route path="/statistics"   element={<StatisticsPage />} />
+          <Route path="/settings"     element={<SettingsPage />}  />
           <Route path="*"             element={<Navigate to="/" replace />} />
         </Routes>
       </main>
