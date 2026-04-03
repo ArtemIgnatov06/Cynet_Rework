@@ -86,7 +86,8 @@
   font-size: 12px;
 }
 
-.fp-loading {
+.fp-loading,
+.fp-empty {
   padding: 48px;
   text-align: center;
   color: #475569;

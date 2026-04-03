@@ -167,8 +167,8 @@
 .ap-btn--danger  { background: #ef4444; color: #fff; }
 .ap-btn--primary { background: #2563eb; color: #fff; }
 
-/* ─── Filter bar ──────────────────────────────────────────────────────────── */
-.filter-bar {
+/* ─── Filter bar styles live in FilterBar.css (shared component) ─────────── */
+/* .filter-bar {
   background: rgba(28, 36, 54, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
@@ -356,6 +356,7 @@
   font-size: 12px;
   flex-shrink: 0;
 }
+*/
 
 /* ─── Empty state ─────────────────────────────────────────────────────────── */
 .ap-empty {
