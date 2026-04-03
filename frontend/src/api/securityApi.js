@@ -528,6 +528,276 @@ export async function saveUbaSettingsData(payload) {
   return structuredClone(payload);
 }
 
+// ─── MOCK: SETTINGS / INTEGRATIONS ──────────────────────────────────────────
+const MOCK_INTEGRATIONS_SETTINGS_DATA = {
+  title: "Third party integration",
+  description: "Manage integration with apps and SaaS. Click a card to review or update the connected services.",
+  categories: [
+    {
+      id: "saas-cloud",
+      title: "SaaS & Cloud",
+      manageByGroup: false,
+      integrations: [
+        {
+          id: "m365",
+          name: "Microsoft 365",
+          shortLabel: "M365",
+          theme: "violet",
+          status: "connected",
+          description: "Connect Microsoft 365 signals, tenant visibility, and app posture insights in one place.",
+          details: "Use this integration to bring Microsoft 365 activity into Cynet and simplify visibility for email, collaboration, and tenant-level posture.",
+          services: [
+            { id: "sspm", name: "Security Posture & Inventory (SSPM)", enabled: true, recommended: true },
+            { id: "activity", name: "Audit activity sync", enabled: true, recommended: false },
+          ],
+        },
+        {
+          id: "entra-id",
+          name: "Entra ID",
+          shortLabel: "ID",
+          theme: "blue",
+          status: "connected",
+          description: "Directory and identity monitoring for cloud authentication and access.",
+          details: "Use Entra ID when the team wants identity context and sign-in visibility without opening multiple admin portals.",
+          services: [
+            { id: "identity-risk", name: "Identity risk sync", enabled: true, recommended: true },
+            { id: "sign-ins", name: "Sign-in log sync", enabled: true, recommended: true },
+          ],
+        },
+        {
+          id: "teams",
+          name: "Microsoft Teams",
+          shortLabel: "T",
+          theme: "indigo",
+          status: "available",
+          description: "Collaboration context for messages, users, and connected investigations.",
+          details: "Teams can be connected when collaboration events should enrich investigations or incident workflows.",
+          services: [
+            { id: "messages", name: "Message activity visibility", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "zoom",
+          name: "Zoom",
+          shortLabel: "Z",
+          theme: "zoom",
+          status: "available",
+          description: "Meeting and collaboration visibility for teams that rely on Zoom.",
+          details: "Use Zoom when the team wants clearer meeting visibility and collaboration context inside Cynet.",
+          services: [
+            { id: "meetings", name: "Meeting activity sync", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "onedrive",
+          name: "OneDrive for Business",
+          shortLabel: "OD",
+          theme: "cloud",
+          status: "available",
+          description: "File storage activity and business file sharing visibility.",
+          details: "OneDrive for Business helps the team understand file access and business sharing activity without leaving the platform.",
+          services: [
+            { id: "files", name: "File activity sync", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "sharepoint",
+          name: "SharePoint",
+          shortLabel: "SP",
+          theme: "teal",
+          status: "available",
+          description: "Document library and site activity for Microsoft collaboration spaces.",
+          details: "Connect SharePoint to keep document and collaboration-site visibility in the same workflow as the rest of the tenant.",
+          services: [
+            { id: "sites", name: "Site activity sync", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "salesforce",
+          name: "Salesforce",
+          shortLabel: "SF",
+          theme: "cyan",
+          status: "available",
+          description: "Business app posture and connected SaaS inventory.",
+          details: "Salesforce is useful when the team wants clearer SaaS ownership and connected app monitoring.",
+          services: [
+            { id: "sspm", name: "Security Posture & Inventory (SSPM)", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "google-workspace",
+          name: "Google Workspace",
+          shortLabel: "G",
+          theme: "multi",
+          status: "attention",
+          description: "Workspace applications and cloud identity with security posture visibility.",
+          details: "Google Workspace includes business applications that interoperate for collaboration and productivity. Connect it to keep cloud app posture understandable for the team.",
+          services: [
+            { id: "sspm", name: "Security Posture & Inventory (SSPM)", enabled: false, recommended: true },
+            { id: "gmail", name: "Gmail activity visibility", enabled: false, recommended: false },
+          ],
+        },
+        {
+          id: "aws",
+          name: "AWS",
+          shortLabel: "AWS",
+          theme: "dark",
+          status: "connected",
+          description: "Cloud account posture and workload inventory for AWS environments.",
+          details: "AWS helps the team centralize posture issues and cloud inventory without jumping between consoles.",
+          services: [
+            { id: "cloud-posture", name: "Cloud posture sync", enabled: true, recommended: true },
+            { id: "asset-inventory", name: "Asset inventory", enabled: true, recommended: true },
+          ],
+        },
+        {
+          id: "dropbox",
+          name: "Dropbox",
+          shortLabel: "DB",
+          theme: "dropbox",
+          status: "available",
+          description: "Cloud file sharing and storage integration for Dropbox environments.",
+          details: "Dropbox helps the team bring business file activity into Cynet without forcing analysts into another admin panel.",
+          services: [
+            { id: "files", name: "File sharing visibility", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "webex",
+          name: "Webex",
+          shortLabel: "W",
+          theme: "webex",
+          status: "available",
+          description: "Meeting collaboration visibility for organizations using Webex.",
+          details: "Webex can be connected when meeting data and collaboration context should be part of investigations.",
+          services: [
+            { id: "meetings", name: "Meeting activity sync", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "port-scanner",
+          name: "Port Scanner",
+          shortLabel: "PS",
+          theme: "pink",
+          status: "available",
+          description: "External scanner integration for simple exposure visibility.",
+          details: "Use Port Scanner when the team wants a basic external view of exposed services and listening ports.",
+          services: [
+            { id: "scan-results", name: "Scan result import", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "slack",
+          name: "Slack",
+          shortLabel: "SL",
+          theme: "slack",
+          status: "available",
+          description: "ChatOps and notification delivery into Slack workspaces.",
+          details: "Slack is useful for teams that want fast operational notifications in a collaboration channel they already use every day.",
+          services: [
+            { id: "notifications", name: "Alert notifications", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "slack-enterprise",
+          name: "Slack Enterprise",
+          shortLabel: "SE",
+          theme: "slack",
+          status: "available",
+          description: "Enterprise Slack support for larger collaboration environments.",
+          details: "Use Slack Enterprise when the organization needs the same notification and workflow features in a larger Slack deployment.",
+          services: [
+            { id: "notifications", name: "Alert notifications", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "okta",
+          name: "Okta",
+          shortLabel: "O",
+          theme: "sky",
+          status: "available",
+          description: "Identity provider integration for authentication and user access visibility.",
+          details: "Connect Okta when the organization uses it as a main identity provider and wants user context inside Cynet.",
+          services: [
+            { id: "auth", name: "Authentication events", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "azure",
+          name: "Azure",
+          shortLabel: "AZ",
+          theme: "azure",
+          status: "available",
+          description: "Cloud platform posture and service visibility for Azure environments.",
+          details: "Connect Azure to keep cloud-service visibility and infrastructure posture easier to understand in one place.",
+          services: [
+            { id: "cloud-posture", name: "Cloud posture sync", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "google-cloud",
+          name: "Google Cloud",
+          shortLabel: "GC",
+          theme: "gcloud",
+          status: "available",
+          description: "Cloud posture and service visibility for Google Cloud projects.",
+          details: "Google Cloud helps the team review posture issues and cloud inventory alongside the rest of the security stack.",
+          services: [
+            { id: "cloud-posture", name: "Cloud posture sync", enabled: false, recommended: true },
+          ],
+        },
+      ],
+    },
+    {
+      id: "psa-rmm",
+      title: "PSA/RMM",
+      manageByGroup: false,
+      integrations: [
+        {
+          id: "datto-autotask",
+          name: "Datto Autotask",
+          shortLabel: "DA",
+          theme: "slate",
+          status: "available",
+          description: "Ticketing and managed service workflow integration.",
+          details: "Use Datto Autotask to push relevant incidents into an external service management workflow.",
+          services: [
+            { id: "ticketing", name: "Ticket creation", enabled: false, recommended: true },
+          ],
+        },
+        {
+          id: "connectwise",
+          name: "ConnectWise",
+          shortLabel: "CW",
+          theme: "slate",
+          status: "available",
+          description: "PSA integration for tickets and downstream service handling.",
+          details: "ConnectWise lets the team send incidents into an established support or MSP process.",
+          services: [
+            { id: "ticketing", name: "Ticket creation", enabled: false, recommended: true },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export async function fetchIntegrationsSettingsData() {
+  // TODO: replace with real call
+  // const res = await fetch('/api/v1/settings/integrations');
+  // return res.json();
+  await delay(250);
+  return structuredClone(MOCK_INTEGRATIONS_SETTINGS_DATA);
+}
+
+export async function saveIntegrationSettings(categoryId, integrationId, payload) {
+  // TODO: replace with real call
+  // const res = await fetch(`/api/v1/settings/integrations/${categoryId}/${integrationId}`, { method: 'PUT', body: JSON.stringify(payload) });
+  // return res.json();
+  await delay(220);
+  return structuredClone(payload);
+}
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function delay(ms) {
   return new Promise((r) => setTimeout(r, ms));

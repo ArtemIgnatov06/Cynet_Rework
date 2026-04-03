@@ -2,6 +2,7 @@ import { useState } from "react";
 import AllowlistTab from "./settings/AllowlistTab";
 import AlertsSettingsTab from "./settings/AlertsSettingsTab";
 import GroupsTab from "./settings/GroupsTab";
+import IntegrationsTab from "./settings/IntegrationsTab";
 import UbaSettingsTab from "./settings/UbaSettingsTab";
 import "./SettingsPage.css";
 
@@ -34,6 +35,10 @@ export default function SettingsPage() {
 
     if (active === "Alerts") {
       return <AlertsSettingsTab />;
+    }
+
+    if (active === "Integrations") {
+      return <IntegrationsTab />;
     }
 
     if (active === "UBA") {
