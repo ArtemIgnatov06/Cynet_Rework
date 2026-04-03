@@ -1,0 +1,373 @@
+.alt {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.alt-tabs {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.alt-tabs__item {
+  padding: 0 2px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.alt-tabs__item--active {
+  color: #f1f5f9;
+  border-bottom-color: #2563eb;
+}
+
+.alt-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.alt-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.alt-search__icon {
+  position: absolute;
+  left: 12px;
+  color: #64748b;
+  display: inline-flex;
+}
+
+.alt-search input,
+.alt-form input,
+.alt-form textarea {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.65);
+  color: #e2e8f0;
+  font-size: 13px;
+  outline: none;
+}
+
+.alt-search input {
+  width: 280px;
+  height: 40px;
+  padding: 0 12px 0 38px;
+}
+
+.alt-search input:focus,
+.alt-form input:focus,
+.alt-form textarea:focus {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.alt-toolbar__actions,
+.alt-form__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.alt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 15px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.alt-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.alt-btn--primary {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.alt-btn--secondary {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+.alt-btn--danger {
+  background: rgba(127, 29, 29, 0.18);
+  border-color: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+}
+
+.alt-table-wrap {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.alt-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+}
+
+.alt-table th,
+.alt-table td {
+  padding: 14px 18px;
+  text-align: left;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alt-table th {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.alt-table__name {
+  width: 18%;
+}
+
+.alt-table__actions {
+  width: 110px;
+}
+
+.alt-row {
+  cursor: pointer;
+}
+
+.alt-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.alt-row--selected {
+  background: rgba(30, 64, 175, 0.16);
+}
+
+.alt-row__name {
+  color: #f1f5f9 !important;
+  font-weight: 500;
+}
+
+.alt-row__description {
+  color: #cbd5e1 !important;
+}
+
+.alt-row__actions {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.alt-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.alt-row-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.alt-row-btn:hover,
+.alt-row-btn--active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+.alt-row-btn--danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.alt-row-menu {
+  position: relative;
+}
+
+.alt-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 10;
+  min-width: 170px;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: #0f172a;
+  box-shadow: 0 16px 32px rgba(2, 6, 23, 0.35);
+}
+
+.alt-dropdown__item {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #cbd5e1;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.alt-dropdown__item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.alt-dropdown__item--danger {
+  color: #fca5a5;
+}
+
+.alt-empty {
+  padding: 56px 24px;
+  text-align: center;
+  color: #64748b;
+}
+
+.alt-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.alt-pagination__controls {
+  display: flex;
+  gap: 8px;
+}
+
+.alt-page-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.alt-page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.alt-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(2, 6, 23, 0.68);
+}
+
+.alt-modal {
+  width: min(100%, 560px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: #0f172a;
+}
+
+.alt-modal__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.alt-modal__header h2 {
+  color: #f1f5f9;
+  font-size: 18px;
+}
+
+.alt-modal__header p {
+  margin-top: 6px;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.alt-modal__close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.alt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.alt-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alt-form__field span {
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.alt-form__field input {
+  height: 40px;
+  padding: 0 12px;
+}
+
+.alt-form__field textarea {
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.alt-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .alt-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .alt-search input {
+    width: 100%;
+  }
+
+  .alt-form__row {
+    grid-template-columns: 1fr;
+  }
+}

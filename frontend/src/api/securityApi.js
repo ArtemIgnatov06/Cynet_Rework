@@ -415,6 +415,119 @@ export async function fetchGroupsData() {
   return structuredClone(MOCK_GROUPS_DATA);
 }
 
+// ─── MOCK: SETTINGS / ALLOWLIST & EXCLUSIONS ────────────────────────────────
+const MOCK_ALLOWLIST_SETTINGS_DATA = {
+  allowlist: [
+    {
+      id: "al-1",
+      name: "Corporate VPN Client",
+      description: "Trusted VPN installer used across employee laptops.",
+      groups: ["Adeline_Endpoint_WIN", "Windows Workstations"],
+      hosts: ["WINS102", "Worldsokol"],
+      lastModified: "2026-03-28T09:10:00Z",
+    },
+    {
+      id: "al-2",
+      name: "Finance Excel Add-in",
+      description: "Approved finance add-in signed by the internal IT team.",
+      groups: ["Critical Assets"],
+      hosts: [],
+      lastModified: "2026-03-25T13:42:00Z",
+    },
+    {
+      id: "al-3",
+      name: "DesignSync Agent",
+      description: "macOS sync utility required by the design team.",
+      groups: ["Adeline_Endpoint_MAC"],
+      hosts: ["MacBook Air - Adeline"],
+      lastModified: "2026-03-20T11:20:00Z",
+    },
+  ],
+  exclusions: [
+    {
+      id: "ex-1",
+      name: "Build Cache Folder",
+      description: "Temporary engineering build cache excluded from repetitive scans.",
+      groups: ["Linux Workstations"],
+      hosts: ["srv-lnx-prod-02"],
+      lastModified: "2026-03-19T08:55:00Z",
+    },
+    {
+      id: "ex-2",
+      name: "Legacy Backup Share",
+      description: "Network share excluded while the backup migration is still in progress.",
+      groups: ["Windows Servers"],
+      hosts: [],
+      lastModified: "2026-03-14T07:30:00Z",
+    },
+  ],
+};
+
+export async function fetchAllowlistSettingsData() {
+  // TODO: replace with real call
+  // const res = await fetch('/api/v1/settings/allowlist-and-exclusions');
+  // return res.json();
+  await delay(250);
+  return structuredClone(MOCK_ALLOWLIST_SETTINGS_DATA);
+}
+
+// ─── MOCK: SETTINGS / ALERTS ────────────────────────────────────────────────
+const MOCK_ALERTS_SETTINGS_DATA = {
+  emailRecipients: "d.sokolov@adeline.kz, soc@adeline.kz",
+  smtpServer: "10.10.30.25",
+  requireSsl: true,
+  localSender: "alerts@adeline.kz",
+  localRecipients: "security-team@adeline.kz, it-ops@adeline.kz",
+  sendAlertsToAwsS3: false,
+  notifyOnCriticalOnly: false,
+  dailyDigestEnabled: true,
+};
+
+export async function fetchAlertsSettingsData() {
+  // TODO: replace with real call
+  // const res = await fetch('/api/v1/settings/alerts');
+  // return res.json();
+  await delay(220);
+  return structuredClone(MOCK_ALERTS_SETTINGS_DATA);
+}
+
+export async function saveAlertsSettingsData(payload) {
+  // TODO: replace with real call
+  // const res = await fetch('/api/v1/settings/alerts', { method: 'PUT', body: JSON.stringify(payload) });
+  // return res.json();
+  await delay(220);
+  return structuredClone(payload);
+}
+
+// ─── MOCK: SETTINGS / UBA ───────────────────────────────────────────────────
+const MOCK_UBA_SETTINGS_DATA = {
+  enabled: true,
+  learningMode: false,
+  alertOnImpossibleTravel: true,
+  alertOnPrivilegeEscalation: true,
+  alertOnBruteForce: true,
+  riskThreshold: "medium",
+  inactivityWindowDays: 14,
+  priorityUsers: "admin@adeline.local, finance@adeline.local",
+  recipientEmails: "soc@adeline.kz",
+};
+
+export async function fetchUbaSettingsData() {
+  // TODO: replace with real call
+  // const res = await fetch('/api/v1/settings/uba');
+  // return res.json();
+  await delay(220);
+  return structuredClone(MOCK_UBA_SETTINGS_DATA);
+}
+
+export async function saveUbaSettingsData(payload) {
+  // TODO: replace with real call
+  // const res = await fetch('/api/v1/settings/uba', { method: 'PUT', body: JSON.stringify(payload) });
+  // return res.json();
+  await delay(220);
+  return structuredClone(payload);
+}
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function delay(ms) {
   return new Promise((r) => setTimeout(r, ms));
