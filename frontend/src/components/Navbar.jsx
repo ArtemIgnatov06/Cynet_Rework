@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconDownload, IconSettings, IconUser } from "./Icons";
+import NotesPanel from "./NotesPanel";
 import "./Navbar.css";
 
 const NAV_LINKS = [
@@ -108,6 +109,8 @@ export default function Navbar() {
             </div>
           )}
         </div>
+
+        <NotesPanel />
 
         <button
           className="navbar__helpbot-btn"
