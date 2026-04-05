@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SecurityRing from "../components/SecurityRing";
 import SectionCard from "../components/SectionCard";
@@ -5,9 +6,15 @@ import { SectionIcon } from "../components/Icons";
 import { useSecurityData } from "../hooks/useSecurityData";
 import "./Dashboard.css";
 
+// null = real data (has critical) | "warning" = no critical, some yellow | "ok" = all green
+const TEST_CYCLE = [null, "warning", "ok"];
+
 export default function Dashboard() {
-  const { data, loading, error, refresh } = useSecurityData(30_000); // refresh every 30s
+  const { data, loading, error, refresh } = useSecurityData(30_000);
   const navigate = useNavigate();
+  const [testIdx, setTestIdx] = useState(0);
+  const testMode = TEST_CYCLE[testIdx];
+  const cycleTest = () => setTestIdx((i) => (i + 1) % TEST_CYCLE.length);
 
   if (loading) {
     return (
@@ -28,11 +35,38 @@ export default function Dashboard() {
     );
   }
 
-  const criticalCount = data.sections.filter((s) => s.status === "critical").length;
-  const warningCount  = data.sections.filter((s) => s.status === "warning").length;
-  const okCount       = data.sections.filter((s) => s.status === "ok").length;
+  // Apply test mode overrides to sections
+  const displaySections = testMode
+    ? data.sections.map((s, i) => {
+        if (testMode === "ok") {
+          return { ...s, status: "ok", score: 100, issues: [] };
+        }
+        if (testMode === "warning") {
+          const isWarning = i <= 1;
+          return {
+            ...s,
+            status: isWarning ? "warning" : "ok",
+            score:  isWarning ? 72 : 100,
+            issues: isWarning
+              ? s.issues.filter((iss) => iss.severity !== "critical").slice(0, 1)
+              : [],
+          };
+        }
+        return s;
+      })
+    : data.sections;
+
+  const criticalCount = displaySections.filter((s) => s.status === "critical").length;
+  const warningCount  = displaySections.filter((s) => s.status === "warning").length;
+  const okCount       = displaySections.filter((s) => s.status === "ok").length;
 
   const overallStatus = criticalCount > 0 ? "critical" : warningCount > 0 ? "warning" : "ok";
+
+  const displayScore = testMode === "ok"
+    ? 100
+    : testMode === "warning"
+      ? Math.max(data.overallScore, 85)
+      : data.overallScore;
 
   const updated = new Date(data.lastUpdated).toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -78,8 +112,8 @@ export default function Dashboard() {
         {/* Left: ring */}
         <div className="dashboard__ring-col">
           <SecurityRing
-            sections={data.sections}
-            overallScore={data.overallScore}
+            sections={displaySections}
+            overallScore={displayScore}
           />
           <p className="dashboard__ring-hint">
             Hover a segment for details · Click to drill in
@@ -90,7 +124,7 @@ export default function Dashboard() {
         <div className="dashboard__cards-col">
           <h2 className="dashboard__cards-title">Security Modules</h2>
           <div className="dashboard__cards-grid">
-            {data.sections.map((section) => (
+            {displaySections.map((section) => (
               <SectionCard key={section.id} section={section} />
             ))}
           </div>
@@ -101,12 +135,12 @@ export default function Dashboard() {
       <section className="dashboard__issues">
         <h2 className="dashboard__issues-title">Active Issues</h2>
         <div className="dashboard__issues-list">
-          {data.sections.flatMap((s) => s.issues).length === 0 ? (
+          {displaySections.flatMap((s) => s.issues).length === 0 ? (
             <div className="dashboard__no-issues">
-              ✓ No active issues — all systems secure
+              No active issues — all systems secure
             </div>
           ) : (
-            data.sections
+            displaySections
               .flatMap((s) =>
                 s.issues.map((issue) => ({ ...issue, sectionLabel: s.label, sectionId: s.id }))
               )
@@ -136,6 +170,12 @@ export default function Dashboard() {
           )}
         </div>
       </section>
+      {/* ── Hidden test button ──────────────────────────────────────── */}
+      <button
+        className={`dashboard__test-btn ${testMode ? `dashboard__test-btn--${testMode}` : ""}`}
+        onClick={cycleTest}
+        title={`Test: ${testMode ?? "default (red)"} → click to cycle`}
+      />
     </div>
   );
 }

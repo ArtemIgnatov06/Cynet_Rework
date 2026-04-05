@@ -1,3 +1,25 @@
+/* ─── Test button ─────────────────────────────────────────────────────────── */
+.dashboard__test-btn {
+  position: fixed;
+  bottom: 14px;
+  left: 14px;
+  z-index: 998;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  opacity: 0.2;
+  transition: opacity 0.2s, background 0.2s, transform 0.2s;
+  padding: 0;
+}
+.dashboard__test-btn:hover { opacity: 0.7; transform: scale(1.4); }
+.dashboard__test-btn--warning { background: #f59e0b; opacity: 0.45; }
+.dashboard__test-btn--warning:hover { opacity: 0.9; }
+.dashboard__test-btn--ok { background: #22c55e; opacity: 0.45; }
+.dashboard__test-btn--ok:hover { opacity: 0.9; }
+
 /* ─── Full-screen status overlay ─────────────────────────────────────────── */
 .screen-overlay {
   position: fixed;

@@ -122,7 +122,7 @@ export default function SecurityRing({ sections, overallScore }) {
         ? "#f59e0b"
         : "#22c55e";
 
-  function handleMouseEnter(e, section, startDeg, endDeg) {
+  function handleMouseEnter(_e, section, startDeg, endDeg) {
     setHovered(section);
     const { x, y } = iconPosition(startDeg, endDeg);
     setTooltipPos({ x, y: y - INNER_R * 0.25 });
