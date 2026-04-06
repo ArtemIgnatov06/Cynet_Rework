@@ -188,18 +188,18 @@ function DevicesSection({ devices, onGoToIntegrations }) {
 /* ── Mini SVG bar chart ────────────────────────────────────────────────── */
 function BarChart({ data, color }) {
   if (!data?.length) return null;
-  const BAR_W = 20, GAP = 6, H = 60;
+  const BAR_W = 36, GAP = 10, H = 100;
   const total = data.length * BAR_W + (data.length - 1) * GAP;
   const max = Math.max(...data.map((d) => d.value), 1);
   return (
-    <svg width={total} height={H + 18} viewBox={`0 0 ${total} ${H + 18}`}>
+    <svg width={total} height={H + 22} viewBox={`0 0 ${total} ${H + 22}`}>
       {data.map((d, i) => {
         const bh = Math.max(3, (d.value / max) * H);
         const x = i * (BAR_W + GAP);
         return (
           <g key={i}>
             <rect x={x} y={H - bh} width={BAR_W} height={bh} rx={4} fill={color} opacity={d.value === max ? 1 : 0.35}/>
-            <text x={x + BAR_W / 2} y={H + 13} textAnchor="middle" fontSize={8} fill="#475569">{d.label}</text>
+            <text x={x + BAR_W / 2} y={H + 16} textAnchor="middle" fontSize={10} fill="#475569">{d.label}</text>
           </g>
         );
       })}
