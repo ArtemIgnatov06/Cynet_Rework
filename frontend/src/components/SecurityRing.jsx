@@ -133,6 +133,16 @@ export default function SecurityRing({ sections, overallScore }) {
   }
 
   function handleClick(section) {
+    const isNetworkSection =
+      section.id === "network" ||
+      section.id === "networks" ||
+      section.label?.toLowerCase().includes("network");
+
+    if (isNetworkSection) {
+      navigate("/networks");
+      return;
+    }
+
     navigate(`/section/${section.id}`);
   }
 
