@@ -8,13 +8,26 @@ import "./Dashboard.css";
 
 // null = real data (has critical) | "warning" = no critical, some yellow | "ok" = all green
 const TEST_CYCLE = [null, "warning", "ok"];
+const REGIME_MAP  = { null: "realistic", warning: "all_yellow", ok: "all_good" };
+const AGENT_URL   = (import.meta.env.VITE_AGENT_URL || "http://localhost:8000").replace(/\/$/, "");
+
+async function pushRegime(mode) {
+  const regime = REGIME_MAP[mode] ?? "realistic";
+  try {
+    await fetch(`${AGENT_URL}/api/regime/${regime}`, { method: "POST" });
+  } catch (_) { /* ignore if backend is down */ }
+}
 
 export default function Dashboard() {
   const { data, loading, error, refresh } = useSecurityData(30_000);
   const navigate = useNavigate();
   const [testIdx, setTestIdx] = useState(0);
   const testMode = TEST_CYCLE[testIdx];
-  const cycleTest = () => setTestIdx((i) => (i + 1) % TEST_CYCLE.length);
+  const cycleTest = () => {
+    const nextIdx = (testIdx + 1) % TEST_CYCLE.length;
+    setTestIdx(nextIdx);
+    pushRegime(TEST_CYCLE[nextIdx]);
+  };
 
   if (loading) {
     return (

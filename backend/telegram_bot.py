@@ -166,6 +166,16 @@ def _section_status_line(section: str, incidents: list[dict]) -> str:
 _known_fps: set[str] = set()
 _poller_initialized = False
 
+# ── Regime tracker ────────────────────────────────────────────────────────────
+_known_regime: str | None = None
+
+_REGIME_MSG = {
+    "all_good":   "✅ *TEST MODE: ALL GOOD*\nAll systems switched to secure — no active threats.",
+    "all_yellow": "🟠 *TEST MODE: WARNING*\nMultiple systems showing warning status. Review recommended.",
+    "all_red":    "🔴 *TEST MODE: CRITICAL*\nCritical threats detected across all systems! Immediate action required.",
+    "realistic":  "📊 *TEST MODE: RESET*\nDashboard returned to realistic data mode.",
+}
+
 
 # ── Command handlers ──────────────────────────────────────────────────────────
 _HELP_TEXT = (
@@ -291,12 +301,55 @@ async def handle_message(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None
 
 
 # ── Background alert poller ───────────────────────────────────────────────────
+async def _check_regime(app: Application) -> None:
+    """Check if the dashboard test regime changed and notify subscribers."""
+    global _known_regime
+    try:
+        async with httpx.AsyncClient(timeout=8) as client:
+            r = await client.get(f"{BACKEND_URL}/api/regime")
+            r.raise_for_status()
+            regime = r.json().get("mode")
+
+        if regime == _known_regime:
+            return
+        prev = _known_regime
+        _known_regime = regime
+
+        # Skip notification on very first check (just initializing)
+        if prev is None:
+            return
+
+        text = _REGIME_MSG.get(regime, f"📊 *Dashboard mode changed:* `{regime}`")
+        for cid in list(SUBS):
+            try:
+                await app.bot.send_message(cid, text, parse_mode=ParseMode.MARKDOWN)
+            except Exception as e:
+                print(f"[bot] Failed to notify {cid}: {e}")
+
+    except Exception as e:
+        print(f"[bot] Regime check error: {e}")
+
+
 async def _alert_poller(app: Application) -> None:
     global _known_fps, _poller_initialized
 
     print(f"[bot] Alert poller started — checking every {POLL_SECS}s")
+
+    # Regime check runs every 10s regardless of POLL_SECS
+    regime_tick = 0
+
     while True:
-        await asyncio.sleep(POLL_SECS)
+        await asyncio.sleep(10)
+        regime_tick += 10
+
+        # Always check regime every 10 seconds
+        await _check_regime(app)
+
+        # Check real alerts at full POLL_SECS interval
+        if regime_tick < POLL_SECS:
+            continue
+        regime_tick = 0
+
         try:
             sections = await _fetch_sections()
             current_fps = {
