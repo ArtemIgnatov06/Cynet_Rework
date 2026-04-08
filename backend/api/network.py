@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from api.regime import apply_global_mode
+from .regime import apply_global_mode
 
 DATA_FILE = Path(__file__).parent / "src" / "network_data.json"
 
