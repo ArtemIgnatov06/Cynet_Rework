@@ -1,0 +1,45 @@
+{
+  "network": {
+    "connection": {
+      "connected": true,
+      "provider": "internal_network"
+    },
+    "attack_level": "red",
+    "health_score": 40,
+    "topology": {
+      "root": "Cynet",
+      "endpoints": [
+        {
+          "name": "Adeline_Endpoint_MAC",
+          "children": [
+            {
+              "subnet": "172.20.10.0",
+              "host": "Apple's MacBook Pro",
+              "type": "mac"
+            }
+          ]
+        }
+      ]
+    },
+    "incidents": [
+      {
+        "id": 1,
+        "title": "Lateral movement attempt detected",
+        "description": "Suspicious east-west traffic between internal hosts indicates possible lateral movement.",
+        "severity": "critical",
+        "status": "blocked",
+        "affected_endpoint": "Adeline_Endpoint_WIN",
+        "affected_subnet": "192.168.100.0",
+        "affected_host": "shtyrlya-pc",
+        "attack_type": "lateral_movement",
+        "detected_at": "2m ago"
+      }
+    ],
+    "stats": {
+      "total": 1,
+      "critical": 1,
+      "warning": 0,
+      "safe": 0
+    }
+  }
+}
