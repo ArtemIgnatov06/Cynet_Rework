@@ -1,13 +1,18 @@
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI
+# Allow importing from backend/api/
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from agent import load_chunks, Retriever, build_answer
+from api.network import _build_network_payload
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 CHUNKS_PATH = Path(__file__).parent / "data" / "chunks.jsonl"
@@ -35,6 +40,11 @@ class ChatRequest(BaseModel):
 @app.get("/health")
 def health():
     return {"status": "ok", "chunks_loaded": len(chunks)}
+
+
+@app.get("/api/network")
+def api_network(mode: str = Query("critical"), count: int = Query(3)):
+    return _build_network_payload(mode, count)
 
 
 @app.post("/chat")

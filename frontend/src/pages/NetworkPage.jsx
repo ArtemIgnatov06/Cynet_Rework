@@ -1,80 +1,56 @@
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSecurityData } from "../hooks/useSecurityData";
-import { StatusCard, IcoChevronLeft } from "./GenericSectionPage";
+import { useNetworkData } from "../hooks/useNetworkData";
+import { IcoChevronLeft } from "./GenericSectionPage";
 import "./NetworkPage.css";
 import "./SectionPage.css";
 import NetworkTopologyGraph from "../components/NetworkTopologyGraph";
 
-const SEVERITY_ORDER = { critical: 0, high: 1, medium: 2, low: 3 };
+/* ── Severity config ────────────────────────────────────────────────────────── */
+const SEV_CFG = {
+  critical:   { color: "#ef4444", bg: "rgba(239,68,68,0.12)",  label: "Critical"  },
+  warning:    { color: "#f59e0b", bg: "rgba(245,158,11,0.12)", label: "Warning"   },
+  safe:       { color: "#22c55e", bg: "rgba(34,197,94,0.12)",  label: "Safe"      },
+};
 
+const LEVEL_CFG = {
+  red:    { color: "#ef4444", dim: "rgba(239,68,68,0.12)",  border: "rgba(239,68,68,0.22)",  headline: "Under Attack",      sub: "Critical threats detected on your network" },
+  yellow: { color: "#f59e0b", dim: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.22)", headline: "Needs Attention",   sub: "Some network anomalies require review"     },
+  green:  { color: "#22c55e", dim: "rgba(34,197,94,0.12)",  border: "rgba(34,197,94,0.22)",  headline: "All Clear",         sub: "Network traffic is within normal baseline" },
+};
 
-function ActionCard({ issue, onOpen }) {
+/* ── Incident card ──────────────────────────────────────────────────────────── */
+function IncidentCard({ incident }) {
+  const sev = SEV_CFG[incident.severity] ?? SEV_CFG.warning;
   return (
-    <div className={`network-action-card network-action-card--${issue.severity}`}>
-      <div className="network-action-card__top">
-        <span className="network-action-card__sev">{issue.severity}</span>
-        <span className="network-action-card__title">{issue.title}</span>
+    <div className="net-incident" style={{ "--ic": sev.color }}>
+      <div className="net-incident__badge" style={{ background: sev.bg, color: sev.color }}>
+        {sev.label}
       </div>
-      <p className="network-action-card__desc">{issue.description}</p>
-      <button className="network-action-card__btn" onClick={onOpen}>
-        Perform
-      </button>
+      <div className="net-incident__title">{incident.title}</div>
+      <p className="net-incident__desc">{incident.description}</p>
+      <div className="net-incident__meta">
+        <span className="net-incident__host">{incident.affected_host}</span>
+        <span className="net-incident__subnet">{incident.affected_subnet}</span>
+        <span className={`net-incident__status net-incident__status--${incident.status}`}>
+          {incident.status}
+        </span>
+        <span className="net-incident__time">{incident.detected_at}</span>
+      </div>
     </div>
   );
 }
 
+/* ── Main page ──────────────────────────────────────────────────────────────── */
 export default function NetworkPage() {
   const navigate = useNavigate();
-  const { data, loading, error } = useSecurityData();
+  const { data, loading, error } = useNetworkData("critical", 3);
 
-  const section =
-    data?.sections.find(
-      (s) =>
-        s.id === "network" ||
-        s.id === "networks" ||
-        s.label?.toLowerCase().includes("network")
-    ) || null;
+  if (loading) return <div className="sp-center">Loading…</div>;
+  if (error)   return <div className="sp-center sp-center--err">Failed to load network data: {error}</div>;
 
-  const sortedIssues = [...(section?.issues || [])].sort(
-    (a, b) => (SEVERITY_ORDER[a.severity] ?? 9) - (SEVERITY_ORDER[b.severity] ?? 9)
-  );
-
-  const mapNodes = useMemo(() => {
-    const assets = sortedIssues.flatMap((issue) =>
-      (issue.affectedAssets || []).map((asset) => ({
-        asset,
-        severity: issue.severity,
-        issueTitle: issue.title,
-        route: issue.route,
-      }))
-    );
-
-    const deduped = [];
-    const seen = new Set();
-
-    for (const node of assets) {
-      const key = `${node.asset}-${node.issueTitle}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        deduped.push(node);
-      }
-    }
-
-    return deduped.slice(0, 4);
-  }, [sortedIssues]);
-
-  if (loading) return <div className="section-page__loading">Loading…</div>;
-  if (error) return <div className="section-page__error">Error: {error}</div>;
-
-  if (!section) {
-    return (
-      <div className="section-page__not-found">
-        <p>Network section not found.</p>
-        <button onClick={() => navigate("/")}>← Back to overview</button>
-      </div>
-    );
-  }
+  const net  = data?.network;
+  const lvl  = LEVEL_CFG[net?.attack_level] ?? LEVEL_CFG.green;
+  const stats = net?.stats ?? {};
 
   return (
     <div className="sp network-page">
@@ -82,97 +58,63 @@ export default function NetworkPage() {
         <IcoChevronLeft /> Overview
       </button>
 
-      <StatusCard section={section} />
+      {/* ── Status card ── */}
+      <div className="sp-status" style={{ "--st-color": lvl.color, "--st-dim": lvl.dim, "--st-border": lvl.border }}>
+        <div className="sp-status__meta">
+          <div className="sp-status__name">Network</div>
+          <div className="sp-status__count">{Object.values(net?.topology?.endpoints ?? []).reduce((s, g) => s + g.children.length, 0)} hosts monitored</div>
+        </div>
+        <div className="sp-status__center">
+          <div className="sp-status__emoji">{net?.attack_level === "green" ? "✓" : "!"}</div>
+          <div className="sp-status__headline">{lvl.headline}</div>
+          <div className="sp-status__sub">{lvl.sub}</div>
+        </div>
+        <div className="sp-status__score-wrap">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8"/>
+            <circle cx="45" cy="45" r="36" fill="none" stroke={lvl.color} strokeWidth="8"
+              strokeLinecap="round"
+              strokeDasharray={`${2 * Math.PI * 36}`}
+              strokeDashoffset={`${2 * Math.PI * 36 * (1 - net.health_score / 100)}`}
+              transform="rotate(-90 45 45)" opacity="0.85"
+            />
+          </svg>
+          <div className="sp-status__score-val" style={{ color: lvl.color }}>{net.health_score}%</div>
+        </div>
+      </div>
 
+      {/* ── Stats row ── */}
+      <div className="net-stats">
+        {stats.critical > 0 && <div className="net-stat net-stat--critical"><span>{stats.critical}</span> Critical</div>}
+        {stats.warning  > 0 && <div className="net-stat net-stat--warning"><span>{stats.warning}</span> Warning</div>}
+        {stats.safe     > 0 && <div className="net-stat net-stat--safe"><span>{stats.safe}</span> Safe</div>}
+      </div>
+
+      {/* ── Topology map ── */}
       <section className="section-page__block network-map-block">
-          <h2 className="section-page__block-title">Map</h2>
-
-          <NetworkTopologyGraph />
-
-          <div className="network-map__footer" style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
-            <button
-              className="network-map-block__view-btn"
-              onClick={() => navigate("/system")}
-              type="button"
-            >
-              View system
-            </button>
-          </div>
-        </section>
-
-      <section className="section-page__block">
-        <h2 className="section-page__block-title">Security Modules</h2>
-        <div className="section-page__modules">
-          {section.subModules?.map((mod) => (
-            <div
-              key={mod.name}
-              className={`module-card ${mod.ok ? "module-card--ok" : "module-card--fail"}`}
-            >
-              <span className="module-card__status-dot" />
-              <span className="module-card__name">{mod.name}</span>
-              <span className="module-card__badge">{mod.ok ? "OK" : "Issue"}</span>
-            </div>
-          ))}
+        <h2 className="section-page__block-title">Network Map</h2>
+        <NetworkTopologyGraph topology={net?.topology} />
+        <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+          <button className="network-map-block__view-btn" onClick={() => navigate("/system")}>
+            View system
+          </button>
         </div>
       </section>
 
+      {/* ── Incidents ── */}
       <section className="section-page__block">
         <h2 className="section-page__block-title">
-          Active Issues
-          {sortedIssues.length > 0 && (
-            <span className="section-page__issue-count">{sortedIssues.length}</span>
+          Active Incidents
+          {net?.incidents?.length > 0 && (
+            <span className="section-page__issue-count">{net.incidents.length}</span>
           )}
         </h2>
 
-        {sortedIssues.length === 0 ? (
-          <div className="section-page__no-issues">✓ No active issues in this section</div>
+        {!net?.incidents?.length ? (
+          <div className="section-page__no-issues">✓ No active incidents</div>
         ) : (
-          <div className="section-page__issues">
-            {sortedIssues.map((issue) => (
-              <div
-                key={issue.id}
-                className={`issue-detail issue-detail--${issue.severity}`}
-                onClick={() => navigate(issue.route)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && navigate(issue.route)}
-              >
-                <div className="issue-detail__header">
-                  <span className="issue-detail__sev">{issue.severity}</span>
-                  <span className="issue-detail__title">{issue.title}</span>
-                  <span className="issue-detail__arrow">→</span>
-                </div>
-                <p className="issue-detail__desc">{issue.description}</p>
-                <div className="issue-detail__assets">
-                  {issue.affectedAssets?.map((a) => (
-                    <span key={a} className="issue-detail__asset">
-                      {a}
-                    </span>
-                  ))}
-                </div>
-                <div className="issue-detail__time">
-                  Detected: {new Date(issue.detectedAt).toLocaleString()}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="section-page__block">
-        <h2 className="section-page__block-title">Actions to perform</h2>
-
-        {sortedIssues.length === 0 ? (
-          <div className="section-page__no-issues">No actions required right now.</div>
-        ) : (
-          <div className="network-actions">
-            {sortedIssues.map((issue) => (
-              <ActionCard
-                key={issue.id}
-                issue={issue}
-                onOpen={() => navigate(issue.route)}
-              />
-            ))}
+          <div className="net-incidents">
+            {net.incidents.map((inc) => <IncidentCard key={inc.id} incident={inc} />)}
           </div>
         )}
       </section>

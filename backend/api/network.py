@@ -1,10 +1,18 @@
 import json
 from pathlib import Path
-from flask import Blueprint, jsonify
-
-network_bp = Blueprint("network", __name__)
 
 DATA_FILE = Path(__file__).parent / "src" / "network_data.json"
+
+# Flask blueprint — only registered when running the Flask app directly
+try:
+    from flask import Blueprint, jsonify
+    network_bp = Blueprint("network", __name__)
+
+    @network_bp.route("/api/network", methods=["GET"])
+    def api_network_flask():
+        return jsonify(get_network_data())
+except ImportError:
+    network_bp = None
 
 
 STATIC_TOPOLOGY = {
@@ -252,6 +260,3 @@ def get_network_data() -> dict:
         return json.load(f)
 
 
-@network_bp.route("/api/network", methods=["GET"])
-def api_network():
-    return jsonify(get_network_data())
