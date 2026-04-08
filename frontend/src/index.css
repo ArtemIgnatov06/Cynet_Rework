@@ -128,13 +128,46 @@ body {
 /* Dashboard */
 [data-theme="light"] .dashboard          { background: transparent; }
 [data-theme="light"] .dashboard__title   { color: #0f172a; }
+[data-theme="light"] .dashboard__updated { color: #64748b; }
+[data-theme="light"] .dashboard__cards-title  { color: #64748b; }
+[data-theme="light"] .dashboard__issues-title { color: #64748b; }
+[data-theme="light"] .dashboard__ring-hint    { color: #94a3b8; }
+[data-theme="light"] .dashboard__issues { border-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .dashboard__refresh-btn  { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #475569; }
+[data-theme="light"] .dashboard__refresh-btn:hover { background: rgba(0,0,0,0.08); color: #0f172a; }
+[data-theme="light"] .dash-stat__lbl    { color: #64748b; }
+
+/* Section cards (module cards on dashboard) */
+[data-theme="light"] .section-card      { background: #fff; border-color: rgba(0,0,0,0.09); }
+[data-theme="light"] .section-card:hover { background: #f8fafc; }
+[data-theme="light"] .section-card__label { color: #0f172a; }
+[data-theme="light"] .section-card__icon  { color: #64748b; }
+[data-theme="light"] .section-card__bar-bg { background: rgba(0,0,0,0.08); }
+[data-theme="light"] .section-card__issues { background: rgba(0,0,0,0.05); color: #64748b; }
+
+/* Security ring center circle */
+[data-theme="light"] .ring-center-bg { fill: #f0f4f8; }
+[data-theme="light"] .ring-score-label { fill: #64748b !important; }
+[data-theme="light"] .ring-segment__label { fill: #334155 !important; }
+[data-theme="light"] .ring-tooltip    { background: rgba(255,255,255,0.97); border-color: rgba(0,0,0,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.15); color: #334155; }
+[data-theme="light"] .ring-tooltip__title { color: #0f172a; }
+[data-theme="light"] .ring-tooltip__score { color: #64748b; }
+[data-theme="light"] .ring-tooltip__score strong { color: #0f172a; }
+[data-theme="light"] .ring-tooltip__hint { color: #94a3b8; border-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .ring-tooltip__more { color: #94a3b8; }
+
+/* Module card (section sub-pages) */
 [data-theme="light"] .module-card        { background: #fff; border-color: rgba(0,0,0,0.08); }
 [data-theme="light"] .module-card__name  { color: #0f172a; }
 [data-theme="light"] .module-card__score { color: #0f172a; }
+
+/* Issue rows */
 [data-theme="light"] .issue-row          { background: #fff; border-color: rgba(0,0,0,0.07); }
-[data-theme="light"] .issue-row:hover    { background: rgba(0,0,0,0.02); }
+[data-theme="light"] .issue-row:hover    { background: #f8fafc; }
 [data-theme="light"] .issue-row__title   { color: #0f172a; }
 [data-theme="light"] .issue-row__desc    { color: #64748b; }
+[data-theme="light"] .issue-row__section { color: #64748b; }
+[data-theme="light"] .issue-row__arrow   { color: #94a3b8; }
 
 /* Chat */
 [data-theme="light"] .chat-main          { background: #fff; border-color: rgba(0,0,0,0.08); }
@@ -171,3 +204,55 @@ body {
 [data-theme="light"] .net-incident__title { color: #0f172a; }
 [data-theme="light"] .net-incident__desc  { color: #64748b; }
 [data-theme="light"] .net-stat            { background: rgba(0,0,0,0.03); }
+
+/* ── Statistics page ─────────────────────────────────────────────────────── */
+[data-theme="light"] .stat-card           { background: #fff; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .stat-card__label    { color: #64748b; }
+[data-theme="light"] .mod-card            { background: #fff; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .mod-card__name      { color: #0f172a; }
+[data-theme="light"] .mod-card__sub       { color: #64748b; }
+[data-theme="light"] .mod-card__shield--disabled { color: #cbd5e1; }
+[data-theme="light"] .stats-chart-box     { background: #fff; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .bar-chart__label    { color: #64748b; }
+[data-theme="light"] .stats-cat-table     { background: #fff; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .stats-cat-row       { border-color: rgba(0,0,0,0.05); color: #475569; }
+[data-theme="light"] .stats-cat-row--head { background: rgba(0,0,0,0.03); color: #64748b; }
+[data-theme="light"] .stats-section-title { color: #64748b; }
+[data-theme="light"] .stats-cat-closed    { color: #94a3b8; }
+[data-theme="light"] .stats-cat-open      { background: rgba(2,132,199,0.1); color: #0284c7; border-color: rgba(2,132,199,0.2); }
+
+/* ── Forensic / System page ──────────────────────────────────────────────── */
+[data-theme="light"] .page-title          { color: #0f172a; }
+[data-theme="light"] .fp-tabs             { border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .fp-tab              { color: #64748b; }
+[data-theme="light"] .fp-tab:hover        { color: #0f172a; }
+[data-theme="light"] .fp-tab--active      { color: #0284c7; border-bottom-color: #0284c7; }
+[data-theme="light"] .fp-content          { background: #fff; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .fp-table-meta       { border-color: rgba(0,0,0,0.07); color: #64748b; }
+[data-theme="light"] .fp-table thead tr   { border-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .fp-table th         { color: #64748b; }
+[data-theme="light"] .fp-table td         { color: #334155; border-color: rgba(0,0,0,0.05); }
+[data-theme="light"] .fp-table tbody tr:hover td { background: rgba(0,0,0,0.02); }
+[data-theme="light"] .fp-table__mono      { color: #475569 !important; }
+[data-theme="light"] .fp-table__filename,
+[data-theme="light"] .fp-table__link      { color: #0284c7 !important; }
+[data-theme="light"] .fp-count            { color: #94a3b8; }
+[data-theme="light"] .fp-empty,
+[data-theme="light"] .fp-loading          { color: #64748b; }
+
+/* ── Actions page ────────────────────────────────────────────────────────── */
+[data-theme="light"] .ap-subtabs          { border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .ap-subtab           { color: #64748b; }
+[data-theme="light"] .ap-subtab:hover     { color: #0f172a; }
+[data-theme="light"] .ap-subtab--active   { color: #0284c7; border-bottom-color: #0284c7; }
+[data-theme="light"] .ap-table thead tr   { border-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .ap-table th         { color: #64748b; }
+[data-theme="light"] .ap-table td         { color: #334155; border-color: rgba(0,0,0,0.05); }
+[data-theme="light"] .ap-table tbody tr:hover td { background: rgba(0,0,0,0.02); }
+[data-theme="light"] .ap-table__mono      { color: #475569 !important; }
+[data-theme="light"] .ap-table__filename,
+[data-theme="light"] .ap-table__link,
+[data-theme="light"] .ap-table__link-muted { color: #0284c7 !important; }
+[data-theme="light"] .ap-table__info      { color: #64748b !important; }
+[data-theme="light"] .ap-section-title    { color: #475569; }
+[data-theme="light"] .ap-empty            { color: #64748b; }
