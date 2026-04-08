@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { SectionIcon, SectionIconSVG } from "./Icons";
+import { useTheme } from "../context/ThemeContext";
 import "./SecurityRing.css";
 
 // ─── STATUS CONFIG ───────────────────────────────────────────────────────────
@@ -108,6 +109,8 @@ function Tooltip({ section, x, y, svgWidth }) {
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function SecurityRing({ sections, overallScore }) {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isLight = theme === "light";
   const [hovered, setHovered] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const svgRef = useRef(null);
@@ -180,8 +183,8 @@ export default function SecurityRing({ sections, overallScore }) {
               <path
                 d={path}
                 fill={cfg.color}
-                opacity={isHov ? 1 : 0.75}
-                stroke="#0f172a"
+                opacity={isHov ? 1 : isLight ? 0.88 : 0.75}
+                stroke={isLight ? "#f0f4f8" : "#0f172a"}
                 strokeWidth="1"
               />
 
@@ -198,7 +201,7 @@ export default function SecurityRing({ sections, overallScore }) {
                 textAnchor={isLeftSide ? "end" : "start"}
                 dominantBaseline="middle"
                 className="ring-segment__label"
-                fill={isHov ? cfg.color : "rgba(203,213,225,0.9)"}
+                fill={isHov ? cfg.color : isLight ? "#475569" : "rgba(203,213,225,0.9)"}
               >
                 {section.label}
               </text>
@@ -206,7 +209,7 @@ export default function SecurityRing({ sections, overallScore }) {
           );
         })}
 
-        <circle cx={CX} cy={CY} r={INNER_R - 10} fill="#0f172a" />
+        <circle cx={CX} cy={CY} r={INNER_R - 10} fill={isLight ? "#f0f4f8" : "#0f172a"} className="ring-center-bg" />
 
         <text
           x={CX}
@@ -223,7 +226,7 @@ export default function SecurityRing({ sections, overallScore }) {
           y={CY + 22}
           textAnchor="middle"
           className="ring-score-label"
-          fill="rgba(148,163,184,0.9)"
+          fill={isLight ? "#64748b" : "rgba(148,163,184,0.9)"}
         >
           Security Health
         </text>
