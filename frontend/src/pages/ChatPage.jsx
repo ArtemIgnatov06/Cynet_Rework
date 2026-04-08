@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import "./ChatPage.css";
 
 const AGENT_URL = (import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000") + "/chat";
@@ -31,15 +33,17 @@ const WELCOME_MESSAGE = {
 
 // ─── Markdown-lite renderer ───────────────────────────────────────────────────
 function renderText(text) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>;
-    }
-    return part.split("\n").map((line, j, arr) => (
-      <span key={`${i}-${j}`}>{line}{j < arr.length - 1 && <br />}</span>
-    ));
-  });
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        // открывать ссылки в новой вкладке
+        a: ({ href, children }) => <a href={href} target="_blank" rel="noreferrer">{children}</a>,
+      }}
+    >
+      {text}
+    </ReactMarkdown>
+  );
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────

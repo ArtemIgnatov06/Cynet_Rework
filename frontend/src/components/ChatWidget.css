@@ -216,8 +216,32 @@
   color: #e2e8f0;
 }
 .cw-bubble--user .cw-bubble__text { color: #fff; }
+.cw-bubble__text p { margin: 0 0 6px; }
+.cw-bubble__text p:last-child { margin-bottom: 0; }
 .cw-bubble__text strong { color: #7dd3fc; font-weight: 700; }
 .cw-bubble--user .cw-bubble__text strong { color: #e0f2fe; }
+.cw-bubble__text em { color: #94a3b8; font-style: italic; }
+.cw-bubble__text h1,.cw-bubble__text h2,.cw-bubble__text h3 {
+  font-size: 12px; font-weight: 700; color: #f1f5f9; margin: 8px 0 3px;
+}
+.cw-bubble__text ul,.cw-bubble__text ol { margin: 3px 0 6px 16px; padding: 0; }
+.cw-bubble__text li { margin-bottom: 2px; }
+.cw-bubble__text code {
+  background: rgba(14,165,233,0.12); color: #7dd3fc;
+  padding: 1px 4px; border-radius: 3px; font-size: 11px;
+}
+.cw-bubble__text table {
+  border-collapse: collapse; width: 100%; font-size: 11px; margin: 6px 0;
+}
+.cw-bubble__text th {
+  background: rgba(14,165,233,0.15); color: #7dd3fc;
+  padding: 4px 6px; text-align: left; font-weight: 600;
+}
+.cw-bubble__text td { padding: 3px 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.cw-bubble__text a { color: #38bdf8; text-decoration: underline; }
+.cw-bubble__text blockquote {
+  border-left: 2px solid #0ea5e9; margin: 4px 0; padding: 2px 8px; color: #94a3b8;
+}
 
 /* ─── Typing dots ─────────────────────────────────────────────────────────── */
 .cw-bubble--typing {
