@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from backend.api.regime import apply_global_mode
+
 DATA_FILE = Path(__file__).parent / "src" / "network_data.json"
 
 # Flask blueprint — only registered when running the Flask app directly
@@ -50,7 +52,7 @@ STATIC_TOPOLOGY = {
 
 
 def _build_network_payload(mode: str, count: int = 3) -> dict:
-    mode = mode.lower().strip()
+    mode = apply_global_mode(mode).lower().strip()
     count = max(1, min(count, 4))
 
     critical_pool = [

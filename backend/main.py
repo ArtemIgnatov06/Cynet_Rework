@@ -8,6 +8,11 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from api.regime import get_regime, set_regime
 
 # Try backend/.env first, then backend/agent/.env as fallback
 _env = Path(__file__).parent / ".env"
@@ -19,13 +24,8 @@ ROOT = Path(__file__).parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "agent"))
 
-from fastapi import FastAPI, Query
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
 from agent import load_chunks, Retriever, build_answer  # noqa: E402
 
-# ── App ────────────────────────────────────────────────────────────────────────
 app = FastAPI(title="Cynet Backend")
 
 app.add_middleware(
@@ -35,9 +35,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Agent setup ────────────────────────────────────────────────────────────────
 CHUNKS_PATH = ROOT / "agent" / "data" / "chunks.jsonl"
-chunks   = load_chunks(str(CHUNKS_PATH))
+chunks = load_chunks(str(CHUNKS_PATH))
 retriever = Retriever(chunks) if chunks else None
 
 
@@ -55,18 +54,27 @@ def health():
 def chat(req: ChatRequest):
     if retriever is None:
         return {"answer": "No documentation loaded.", "sources": []}
-    results  = retriever.search(req.query, top_k=req.top_k)
+    results = retriever.search(req.query, top_k=req.top_k)
     response = build_answer(req.query, results)
     return {"answer": response["answer"], "sources": response["sources"]}
 
 
-# ── Auto-register all api/ modules ────────────────────────────────────────────
-# Convention: each api/<name>.py must expose _build_<name>_payload(mode, count)
+@app.get("/api/regime")
+def api_get_regime():
+    return {"mode": get_regime()}
+
+
+@app.post("/api/regime/{mode}")
+def api_set_regime(mode: str):
+    return set_regime(mode)
+
+
 API_DIR = ROOT / "api"
 
 for api_file in sorted(API_DIR.glob("*.py")):
     if api_file.stem.startswith("_"):
         continue
+
     module_name = f"api.{api_file.stem}"
     try:
         mod = importlib.import_module(module_name)
@@ -79,7 +87,6 @@ for api_file in sorted(API_DIR.glob("*.py")):
     if build_fn is None:
         continue
 
-    # Capture in closure so each route gets its own build_fn
     def make_route(fn):
         def route(mode: str = Query("critical"), count: int = Query(3)):
             return fn(mode, count)
