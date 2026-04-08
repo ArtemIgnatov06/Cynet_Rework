@@ -2,19 +2,21 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ChatWidget.css";
 
-// ─── Mock responses ───────────────────────────────────────────────────────────
-const BOT_RESPONSES = [
-  { keywords: ["alert", "alerts"],       reply: "Alerts are prioritized by severity — **Critical**, **High**, **Medium**, **Low**. Configure channels under **Settings → Alerts**." },
-  { keywords: ["group", "groups"],       reply: "Groups organize endpoints by OS or function. Manage them in **Settings → Groups**." },
-  { keywords: ["endpoint", "endpoints"], reply: "All enrolled endpoints are monitored in real time. Check the **Endpoints** section for agent health and isolation state." },
-  { keywords: ["isolat"],                reply: "To isolate a host go to **Actions → Hosts → API Call Actions** and trigger Host Isolation." },
-  { keywords: ["malware", "threat"],     reply: "Detected threats can be auto-quarantined via **Auto Remediation** rules. Review detections in **Actions → Files**." },
-  { keywords: ["scan", "antivirus"],     reply: "Scans can be scheduled per group or triggered on-demand. See **Actions → Hosts → Antivirus Actions** for history." },
-  { keywords: ["integration", "siem"],   reply: "Cynet integrates with Splunk, QRadar, ArcSight and SOAR tools. Configure in **Settings → Integrations**." },
-  { keywords: ["report"],                reply: "Generate security reports from the **Statistics** page covering alert trends, risk scores, and module activity." },
-  { keywords: ["hi", "hello", "hey", "привет"], reply: "Hello! I'm the **Cynet AI Assistant**. Ask me anything about the platform." },
-  { keywords: ["thank"],                 reply: "You're welcome! Stay secure 🛡️" },
-];
+const AGENT_URL = (import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000") + "/chat";
+
+async function fetchBotReply(query) {
+  const res = await fetch(AGENT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  });
+  if (!res.ok) throw new Error(`Server error ${res.status}`);
+  const data = await res.json();
+  const sourceLine = data.sources?.length
+    ? "\n\n**Sources:** " + data.sources.map((s) => s.title).filter(Boolean).join(", ")
+    : "";
+  return data.answer + sourceLine;
+}
 
 const QUICK_ACTIONS = [
   "How do I isolate an endpoint?",
@@ -28,14 +30,6 @@ const WELCOME = {
   text: "Hi! I'm your **Cynet AI Assistant**.\nAsk me anything about the platform.",
   ts: new Date(),
 };
-
-function getBotReply(text) {
-  const lower = text.toLowerCase();
-  for (const e of BOT_RESPONSES) {
-    if (e.keywords.some((k) => lower.includes(k))) return e.reply;
-  }
-  return "I don't have a specific answer yet, but you can open the full assistant for a deeper conversation.";
-}
 
 function renderText(text) {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
@@ -135,7 +129,7 @@ export default function ChatWidget() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
-  const send = useCallback((text) => {
+  const send = useCallback(async (text) => {
     const trimmed = text.trim();
     if (!trimmed || typing) return;
     setMessages((prev) => [...prev, { id: Date.now(), role: "user", text: trimmed, ts: new Date() }]);
@@ -143,12 +137,15 @@ export default function ChatWidget() {
     setQuickDone(true);
     setTyping(true);
 
-    setTimeout(() => {
-      const reply = getBotReply(trimmed);
+    try {
+      const reply = await fetchBotReply(trimmed);
       setMessages((prev) => [...prev, { id: Date.now() + 1, role: "bot", text: reply, ts: new Date() }]);
-      setTyping(false);
       if (!open) setUnread((n) => n + 1);
-    }, 700 + Math.random() * 500);
+    } catch {
+      setMessages((prev) => [...prev, { id: Date.now() + 1, role: "bot", text: "⚠️ Agent server unavailable. Try opening the full assistant.", ts: new Date() }]);
+    } finally {
+      setTyping(false);
+    }
   }, [typing, open]);
 
   const handleKey = (e) => {

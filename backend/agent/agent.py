@@ -1,10 +1,28 @@
 import argparse
 import json
+import os
 from pathlib import Path
 from typing import List
 
+from openai import OpenAI
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+# ── LLM client (OpenRouter) ────────────────────────────────────────────────────
+_llm_client = None
+
+def get_llm_client() -> OpenAI | None:
+    global _llm_client
+    if _llm_client is not None:
+        return _llm_client
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        return None
+    _llm_client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=api_key,
+    )
+    return _llm_client
 
 
 def load_chunks(path: str) -> List[dict]:
@@ -97,40 +115,97 @@ class Retriever:
         return results
 
 
-def build_answer(query: str, retrieved_chunks: List[dict]) -> dict:
-    if not retrieved_chunks:
-        return {
-            "answer": "I could not find relevant documentation for that question.",
-            "sources": [],
-            "retrieved_chunks": [],
-        }
-
-    lines = ["I found these relevant documentation snippets:\n"]
-
-    for idx, chunk in enumerate(retrieved_chunks, start=1):
-        title = chunk.get("article_title", "Untitled")
-        heading = chunk.get("section_heading", "")
-        content = chunk.get("content", "") or chunk.get("text", "")
-        preview = content[:500].strip()
-
-        lines.append(f"{idx}. {title} ({heading})")
-        lines.append(preview)
-        lines.append("")
-
-    sources = []
-    seen = set()
-    for chunk in retrieved_chunks:
+def _collect_sources(chunks: List[dict]) -> List[dict]:
+    sources, seen = [], set()
+    for chunk in chunks:
         key = (chunk.get("article_title"), chunk.get("article_url"))
-        if key in seen:
+        if key not in seen:
+            seen.add(key)
+            sources.append({"title": chunk.get("article_title"), "url": chunk.get("article_url")})
+    return sources
+
+
+def _build_context(chunks: List[dict]) -> str:
+    parts = []
+    for i, chunk in enumerate(chunks, 1):
+        title   = chunk.get("article_title", "Untitled")
+        heading = chunk.get("section_heading", "")
+        content = (chunk.get("content") or chunk.get("text", ""))[:800].strip()
+        parts.append(f"[{i}] {title} — {heading}\n{content}")
+    return "\n\n".join(parts)
+
+
+def build_answer(query: str, retrieved_chunks: List[dict]) -> dict:
+    sources = _collect_sources(retrieved_chunks)
+    client  = get_llm_client()
+
+    # ── No LLM key: raw snippets or simple fallback ────────────────────────
+    if client is None:
+        if not retrieved_chunks:
+            return {"answer": "I could not find relevant documentation for that question.", "sources": [], "retrieved_chunks": []}
+        lines = ["I found these relevant documentation snippets:\n"]
+        for i, chunk in enumerate(retrieved_chunks, 1):
+            title   = chunk.get("article_title", "Untitled")
+            heading = chunk.get("section_heading", "")
+            content = (chunk.get("content") or chunk.get("text", ""))[:500].strip()
+            lines.append(f"{i}. {title} ({heading})\n{content}\n")
+        return {"answer": "\n".join(lines).strip(), "sources": sources, "retrieved_chunks": retrieved_chunks}
+
+    # ── Build prompt depending on whether docs were found ─────────────────
+    system_prompt = (
+        "You are a helpful AI assistant for the Cynet 360 security platform. "
+        "You help users understand the platform, navigate features, and troubleshoot issues. "
+        "Be friendly, concise, and use markdown formatting where helpful."
+    )
+
+    if retrieved_chunks:
+        context     = _build_context(retrieved_chunks)
+        user_prompt = (
+            f"Use the following Cynet documentation excerpts to answer the question. "
+            f"If the excerpts don't fully cover the question, supplement with general knowledge about the platform.\n\n"
+            f"Documentation:\n{context}\n\n---\nQuestion: {query}"
+        )
+    else:
+        # No matching docs — still answer as a platform assistant
+        user_prompt = (
+            f"Answer this question as a helpful Cynet platform assistant. "
+            f"If it's a general greeting or off-topic, respond naturally.\n\nQuestion: {query}"
+        )
+
+    primary = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-20b:free")
+    fallbacks = [
+        "openai/gpt-oss-20b:free",
+        "liquid/lfm-2.5-1.2b-instruct:free",
+        "google/gemma-3-27b-it:free",
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "google/gemma-4-26b-a4b-it:free",
+    ]
+    models = [primary] + [m for m in fallbacks if m != primary]
+
+    answer = None
+    for model in models:
+        try:
+            completion = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user",   "content": user_prompt},
+                ],
+                max_tokens=600,
+                temperature=0.3,
+            )
+            content = completion.choices[0].message.content
+            if content:
+                answer = content.strip()
+                break
+        except Exception:
             continue
-        seen.add(key)
-        sources.append({
-            "title": chunk.get("article_title"),
-            "url": chunk.get("article_url"),
-        })
+
+    if answer is None:
+        answer = "All AI models are temporarily unavailable. Please try again in a moment."
 
     return {
-        "answer": "\n".join(lines).strip(),
+        "answer": answer,
         "sources": sources,
         "retrieved_chunks": retrieved_chunks,
     }

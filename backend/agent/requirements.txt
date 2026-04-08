@@ -2,6 +2,7 @@ beautifulsoup4>=4.12
 fastapi>=0.115
 openai>=1.30
 pydantic>=2.7
+python-dotenv>=1.0
 requests>=2.31
 scikit-learn>=1.4
 uvicorn>=0.30
