@@ -1,2 +1,4 @@
 backend/agent/.env
+backend/.env
+backend/telegram_subs.json
 frontend/.env.local
