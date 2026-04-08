@@ -2,57 +2,18 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ChatPage.css";
 
-// ─── Mock bot responses ───────────────────────────────────────────────────────
-const BOT_RESPONSES = [
-  {
-    keywords: ["alert", "alerts", "алерт"],
-    reply: "Alerts in Cynet are automatically prioritized by severity — **Critical**, **High**, **Medium**, and **Low**. You can configure notification channels under **Settings → Alerts**. Would you like help tuning the alert thresholds?",
-  },
-  {
-    keywords: ["group", "groups", "группа", "группы"],
-    reply: "Groups let you organize endpoints by OS, function, or geography. You can assign scan profiles and EPP policies per group. Head to **Settings → Groups** to create or edit a group. Need help with group policies?",
-  },
-  {
-    keywords: ["endpoint", "endpoints", "эндпоинт"],
-    reply: "Cynet monitors all enrolled endpoints in real time. You can view host status, isolation state, and agent health in the **Endpoints** section. Want to know how to isolate a compromised host?",
-  },
-  {
-    keywords: ["isolat", "isolated", "изол"],
-    reply: "To isolate a host, go to **Actions → Hosts → API Call Actions** and trigger a Host Isolation action. The endpoint will be cut off from the network while staying connected to the Cynet management plane so you can still remediate it.",
-  },
-  {
-    keywords: ["malware", "virus", "threat", "угроза"],
-    reply: "If a threat is detected, Cynet can automatically quarantine or delete the malicious file depending on your **Auto Remediation** rules. You can review all detections in **Actions → Files → Script Actions**.",
-  },
-  {
-    keywords: ["scan", "antivirus", "av", "сканиров"],
-    reply: "Antivirus scans can be scheduled per group or triggered on-demand from an endpoint. Check **Actions → Hosts → Antivirus Actions** for full scan history including scan profiles, status, and any found threats.",
-  },
-  {
-    keywords: ["integration", "siem", "splunk", "интеграц"],
-    reply: "Cynet supports integrations with SIEM platforms (Splunk, QRadar, ArcSight), SOAR tools, and ticketing systems. Navigate to **Settings → Integrations** to configure webhooks, API keys, and data forwarding.",
-  },
-  {
-    keywords: ["report", "отчет", "отчёт"],
-    reply: "You can generate security reports from the **Statistics** page. Reports cover alert trends, risk scores, protected categories, and module activity. Do you need a specific report type?",
-  },
-  {
-    keywords: ["user", "uba", "activity", "пользоват"],
-    reply: "User Behavior Analytics (UBA) tracks anomalous user actions like unusual login times, lateral movement, and privilege escalation attempts. Configure detection sensitivity in **Settings → User Activity (UBA)**.",
-  },
-  {
-    keywords: ["playbook", "автомат", "automat", "remediat"],
-    reply: "Playbooks automate response workflows — for example, isolating a host when ransomware is detected. You can create, clone, and enable them in **Actions → Playbooks**. Want to see example playbook templates?",
-  },
-  {
-    keywords: ["hi", "hello", "hey", "привет", "здравствуй", "добрый"],
-    reply: "Hello! I'm the **Cynet AI Assistant**. I can help you navigate the platform, understand alerts, configure settings, or investigate threats. What can I help you with today?",
-  },
-  {
-    keywords: ["thank", "thanks", "спасиб"],
-    reply: "You're welcome! If you have any other questions about Cynet, I'm always here. Stay secure! 🛡️",
-  },
-];
+const AGENT_URL = (import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000") + "/chat";
+
+async function fetchBotReply(query) {
+  const res = await fetch(AGENT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  });
+  if (!res.ok) throw new Error(`Server error ${res.status}`);
+  const data = await res.json();
+  return { answer: data.answer, sources: data.sources ?? [] };
+}
 
 const QUICK_ACTIONS = [
   "How do I isolate an endpoint?",
@@ -67,16 +28,6 @@ const WELCOME_MESSAGE = {
   text: "Hi! I'm your **Cynet AI Assistant**. I can help you navigate the platform, investigate threats, configure settings, and understand your security posture.\n\nWhat would you like to know?",
   ts: new Date(),
 };
-
-function getBotReply(text) {
-  const lower = text.toLowerCase();
-  for (const entry of BOT_RESPONSES) {
-    if (entry.keywords.some((kw) => lower.includes(kw))) {
-      return entry.reply;
-    }
-  }
-  return "I don't have a specific answer for that yet, but I'm learning! You can also check the **Cynet documentation** or reach out to your account manager. Is there something else I can help you with?";
-}
 
 // ─── Markdown-lite renderer ───────────────────────────────────────────────────
 function renderText(text) {
@@ -165,7 +116,7 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
-  const send = useCallback((text) => {
+  const send = useCallback(async (text) => {
     const trimmed = text.trim();
     if (!trimmed || typing) return;
 
@@ -175,17 +126,26 @@ export default function ChatPage() {
     setQuickDone(true);
     setTyping(true);
 
-    const delay = 800 + Math.random() * 700;
-    setTimeout(() => {
+    try {
+      const { answer, sources } = await fetchBotReply(trimmed);
+      const sourceLine = sources.length
+        ? "\n\n**Sources:** " + sources.map((s) => s.title).filter(Boolean).join(", ")
+        : "";
       const botMsg = {
         id: Date.now() + 1,
         role: "bot",
-        text: getBotReply(trimmed),
+        text: answer + sourceLine,
         ts: new Date(),
       };
       setMessages((prev) => [...prev, botMsg]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now() + 1, role: "bot", text: "⚠️ Could not reach the agent server. Make sure it's running on port 8000.", ts: new Date() },
+      ]);
+    } finally {
       setTyping(false);
-    }, delay);
+    }
   }, [typing]);
 
   const handleKeyDown = (e) => {
