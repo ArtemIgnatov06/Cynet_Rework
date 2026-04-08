@@ -1,17 +1,13 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { SectionIcon } from "../components/Icons";
 import { useSecurityData } from "../hooks/useSecurityData";
+import { StatusCard, IcoChevronLeft } from "./GenericSectionPage";
 import "./NetworkPage.css";
+import "./SectionPage.css";
 import NetworkTopologyGraph from "../components/NetworkTopologyGraph";
 
 const SEVERITY_ORDER = { critical: 0, high: 1, medium: 2, low: 3 };
 
-const STATUS_CFG = {
-  ok: { color: "#22c55e", label: "Secure" },
-  warning: { color: "#f59e0b", label: "Warning" },
-  critical: { color: "#ef4444", label: "Critical" },
-};
 
 function ActionCard({ issue, onOpen }) {
   return (
@@ -80,42 +76,13 @@ export default function NetworkPage() {
     );
   }
 
-  const cfg = STATUS_CFG[section.status] || STATUS_CFG.warning;
-
   return (
-    <div className="section-page network-page">
-      <button className="section-page__back" onClick={() => navigate("/")}>
-        ← Overview
+    <div className="sp network-page">
+      <button className="sp-back" onClick={() => navigate("/")}>
+        <IcoChevronLeft /> Overview
       </button>
 
-      <div className="section-page__hero">
-        <div className="section-page__hero-left">
-          <span className="section-page__hero-icon">
-            <SectionIcon id={section.id} size={28} color="#0ea5e9" />
-          </span>
-          <div>
-            <h1 className="section-page__hero-title">Networks</h1>
-            <span
-              className="section-page__hero-status"
-              style={{ color: cfg.color, borderColor: `${cfg.color}40` }}
-            >
-              {cfg.label}
-            </span>
-          </div>
-        </div>
-
-        <div className="section-page__hero-score" style={{ color: cfg.color }}>
-          {section.score}%
-          <span className="section-page__hero-score-lbl">Health Score</span>
-        </div>
-      </div>
-
-      <div className="section-page__bar-bg">
-        <div
-          className="section-page__bar-fill"
-          style={{ width: `${section.score}%`, background: cfg.color }}
-        />
-      </div>
+      <StatusCard section={section} />
 
       <section className="section-page__block network-map-block">
           <h2 className="section-page__block-title">Map</h2>
