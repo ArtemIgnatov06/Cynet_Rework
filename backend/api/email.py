@@ -1,11 +1,11 @@
 import json
 from pathlib import Path
-
+from .regime import apply_global_mode
 DATA_FILE = Path(__file__).parent / "src" / "email_data.json"
 
 
 def _build_email_payload(mode: str, count: int = 3) -> dict:
-    mode = mode.lower().strip()
+    mode = apply_global_mode(mode).lower().strip()
     count = max(1, min(count, 3))
 
     critical_pool = [

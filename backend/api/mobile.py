@@ -1,11 +1,11 @@
 import json
 from pathlib import Path
-
+from .regime import apply_global_mode
 DATA_FILE = Path(__file__).parent / "src" / "mobile_data.json"
 
 
 def _build_mobile_payload(mode: str = "manageable", count: int = 6) -> dict:
-    mode = (mode or "manageable").lower().strip()
+    mode = apply_global_mode(mode).lower().strip()
     count = max(3, min(count, 10))
 
     devices = [

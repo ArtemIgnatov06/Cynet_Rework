@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from backend.api.regime import apply_global_mode
+
 DATA_FILE = Path(__file__).parent / "src" / "saas_cloud_data.json"
 
 
@@ -43,7 +45,7 @@ def _build_dataset(issues, timeline):
 
 
 def _build_saasCloud_payload(mode: str, count: int = 6) -> dict:
-    mode = mode.lower().strip()
+    mode = apply_global_mode(mode).lower().strip()
     count = max(1, min(count, 12))
 
     risks_issues = [
