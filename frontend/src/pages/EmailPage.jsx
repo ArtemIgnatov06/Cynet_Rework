@@ -91,6 +91,8 @@ export default function EmailPage() {
     };
 
     loadEmailData();
+    const id = setInterval(loadEmailData, 2000);
+    return () => clearInterval(id);
   }, [isConnected]);
 
   if (!isConnected) {
@@ -128,7 +130,7 @@ export default function EmailPage() {
     );
   }
 
-  if (loading) return <div className="sp-center">Connecting to Office 365…</div>;
+  if (loading && !data) return <div className="sp-center">Connecting to Office 365…</div>;
   if (error) return <div className="sp-center sp-center--err">Failed to load email data: {error}</div>;
 
   const email = data?.email;
