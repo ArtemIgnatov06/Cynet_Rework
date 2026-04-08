@@ -311,6 +311,8 @@ async def _check_regime(app: Application) -> None:
             r.raise_for_status()
             regime = r.json().get("mode")
 
+        print(f"[regime] current={regime} known={_known_regime} subs={len(SUBS)}")
+
         if regime == _known_regime:
             return
         prev = _known_regime
@@ -318,12 +320,15 @@ async def _check_regime(app: Application) -> None:
 
         # Skip notification on very first check (just initializing)
         if prev is None:
+            print(f"[regime] Initialized to '{regime}', skipping first notification")
             return
 
+        print(f"[regime] Changed {prev} → {regime}, notifying {len(SUBS)} subscribers")
         text = _REGIME_MSG.get(regime, f"📊 *Dashboard mode changed:* `{regime}`")
         for cid in list(SUBS):
             try:
                 await app.bot.send_message(cid, text, parse_mode=ParseMode.MARKDOWN)
+                print(f"[regime] Notified {cid}")
             except Exception as e:
                 print(f"[bot] Failed to notify {cid}: {e}")
 
