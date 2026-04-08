@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useTheme } from "../context/ThemeContext";
 import "./ChatPage.css";
 
 const AGENT_URL = (import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000") + "/chat";
@@ -109,6 +110,7 @@ function Message({ msg }) {
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function ChatPage() {
   const navigate = useNavigate();
+  const { setLight, setDark, theme } = useTheme();
   const [messages, setMessages]     = useState([WELCOME_MESSAGE]);
   const [input, setInput]           = useState("");
   const [typing, setTyping]         = useState(false);
@@ -120,6 +122,24 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
+  // Detect theme commands locally without hitting the API
+  const tryThemeCommand = useCallback((text) => {
+    const t = text.toLowerCase();
+    if (/(light|светл|белую|белая|белый)/.test(t) && /(theme|тему|тема|режим|mode)/.test(t)) {
+      setLight();
+      return "Switched to **light theme**! You can change it back anytime in **Settings → Appearance**.";
+    }
+    if (/(dark|тёмн|темн|чёрн|черн)/.test(t) && /(theme|тему|тема|режим|mode)/.test(t)) {
+      setDark();
+      return "Switched to **dark theme**! You can change it back anytime in **Settings → Appearance**.";
+    }
+    if (/(toggle|switch|поменяй|переключи).*(theme|тему|тема|режим)/.test(t)) {
+      if (theme === "dark") { setLight(); return "Switched to **light theme**!"; }
+      else                  { setDark();  return "Switched to **dark theme**!"; }
+    }
+    return null;
+  }, [theme, setLight, setDark]);
+
   const send = useCallback(async (text) => {
     const trimmed = text.trim();
     if (!trimmed || typing) return;
@@ -128,8 +148,15 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setQuickDone(true);
-    setTyping(true);
 
+    // Handle theme commands instantly without API call
+    const themeReply = tryThemeCommand(trimmed);
+    if (themeReply) {
+      setMessages((prev) => [...prev, { id: Date.now() + 1, role: "bot", text: themeReply, ts: new Date() }]);
+      return;
+    }
+
+    setTyping(true);
     try {
       const { answer, sources } = await fetchBotReply(trimmed);
       const sourceLine = sources.length
@@ -150,7 +177,7 @@ export default function ChatPage() {
     } finally {
       setTyping(false);
     }
-  }, [typing]);
+  }, [typing, tryThemeCommand]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {

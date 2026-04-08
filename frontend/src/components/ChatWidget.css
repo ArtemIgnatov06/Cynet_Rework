@@ -367,3 +367,29 @@
   flex-shrink: 0;
 }
 .cw-fullpage-btn:hover { color: #64748b; background: rgba(255,255,255,0.02); }
+
+/* ══ Mobile chat widget ══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .cw-panel {
+    left: 8px;
+    right: 8px;
+    bottom: 80px;
+    width: auto;
+    height: 70vh;
+    max-height: 520px;
+    border-radius: 18px;
+  }
+
+  .cw-fab {
+    bottom: 16px;
+    right: 16px;
+    width: 54px;
+    height: 54px;
+  }
+
+  .cw-bubble { max-width: 85vw; }
+
+  .cw-bubble__text table { font-size: 10px; }
+  .cw-bubble__text th,
+  .cw-bubble__text td { padding: 3px 4px; }
+}

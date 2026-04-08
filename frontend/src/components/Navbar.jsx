@@ -29,22 +29,28 @@ const DOWNLOAD_ITEMS = [
 export default function Navbar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [dlOpen, setDlOpen] = useState(false);
-  const dlRef = useRef(null);
+  const [dlOpen,   setDlOpen]   = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const dlRef   = useRef(null);
+  const menuRef = useRef(null);
 
   const isActive = (path) =>
     path === "/" ? pathname === "/" : pathname.startsWith(path);
 
+  // Close menu on route change
+  useEffect(() => { setMenuOpen(false); setDlOpen(false); }, [pathname]);
+
   useEffect(() => {
     const handler = (e) => {
-      if (dlRef.current && !dlRef.current.contains(e.target)) setDlOpen(false);
+      if (dlRef.current   && !dlRef.current.contains(e.target))   setDlOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target))  setMenuOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${menuOpen ? "navbar--open" : ""}`} ref={menuRef}>
       {/* ── Logo ── */}
       <div className="navbar__brand" onClick={() => navigate("/")}>
         <svg
@@ -66,6 +72,11 @@ export default function Navbar() {
           <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d="M24.2618 7.53516H24.2198C21.9034 7.54653 20.0271 9.32274 20.0171 11.5179V11.5577C20.0291 13.7604 21.9154 15.5423 24.2418 15.5423C26.5682 15.5423 28.4665 13.749 28.4665 11.5387C28.4665 9.32843 26.5862 7.54653 24.2618 7.53516Z"/>
         </svg>
       </div>
+
+      {/* ── Burger (mobile only) ── */}
+      <button className="navbar__burger" onClick={() => setMenuOpen(v => !v)} aria-label="Menu">
+        <span/><span/><span/>
+      </button>
 
       <ul className="navbar__links">
         {NAV_LINKS.map(({ path, label }) => (

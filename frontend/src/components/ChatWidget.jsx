@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useTheme } from "../context/ThemeContext";
 import "./ChatWidget.css";
 
 const AGENT_URL = (import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000") + "/chat";
@@ -107,6 +108,7 @@ function Message({ msg }) {
 // ─── Widget ───────────────────────────────────────────────────────────────────
 export default function ChatWidget() {
   const navigate = useNavigate();
+  const { setLight, setDark, theme } = useTheme();
   const [open, setOpen]         = useState(false);
   const [messages, setMessages] = useState([WELCOME]);
   const [input, setInput]       = useState("");
@@ -134,12 +136,34 @@ export default function ChatWidget() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
+  const tryThemeCommand = useCallback((text) => {
+    const t = text.toLowerCase();
+    if (/(light|светл|белую|белая|белый)/.test(t) && /(theme|тему|тема|режим|mode)/.test(t)) {
+      setLight(); return "Switched to **light theme**! Change it anytime in **Settings → Appearance**.";
+    }
+    if (/(dark|тёмн|темн|чёрн|черн)/.test(t) && /(theme|тему|тема|режим|mode)/.test(t)) {
+      setDark(); return "Switched to **dark theme**! Change it anytime in **Settings → Appearance**.";
+    }
+    if (/(toggle|switch|поменяй|переключи).*(theme|тему|тема|режим)/.test(t)) {
+      if (theme === "dark") { setLight(); return "Switched to **light theme**!"; }
+      else                  { setDark();  return "Switched to **dark theme**!"; }
+    }
+    return null;
+  }, [theme, setLight, setDark]);
+
   const send = useCallback(async (text) => {
     const trimmed = text.trim();
     if (!trimmed || typing) return;
     setMessages((prev) => [...prev, { id: Date.now(), role: "user", text: trimmed, ts: new Date() }]);
     setInput("");
     setQuickDone(true);
+
+    const themeReply = tryThemeCommand(trimmed);
+    if (themeReply) {
+      setMessages((prev) => [...prev, { id: Date.now() + 1, role: "bot", text: themeReply, ts: new Date() }]);
+      return;
+    }
+
     setTyping(true);
 
     try {
@@ -151,7 +175,7 @@ export default function ChatWidget() {
     } finally {
       setTyping(false);
     }
-  }, [typing, open]);
+  }, [typing, open, tryThemeCommand]);
 
   const handleKey = (e) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); }

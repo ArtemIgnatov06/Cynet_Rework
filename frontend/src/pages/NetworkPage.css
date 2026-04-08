@@ -318,3 +318,16 @@
 .net-incident__status--contained { background: rgba(245,158,11,0.12); color: #fbbf24; }
 .net-incident__status--monitored { background: rgba(14,165,233,0.12); color: #38bdf8; }
 .net-incident__time { margin-left: auto; }
+
+/* ══ Mobile — network page ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .network-page { gap: 14px; }
+
+  .net-stats { gap: 8px; }
+  .net-stat  { flex: 1; min-width: 0; padding: 10px 10px; font-size: 12px; }
+  .net-stat span { font-size: 18px; }
+
+  .net-incident { padding: 12px 12px; }
+  .net-incident__meta { gap: 6px; font-size: 11px; }
+  .net-incident__time { margin-left: 0; }
+}

@@ -402,3 +402,30 @@
   color: #1e293b;
   text-align: center;
 }
+
+/* ══ Mobile — full chat page ════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .chat-page {
+    flex-direction: column;
+    height: calc(100vh - 52px);
+  }
+
+  /* Hide sidebar on mobile */
+  .chat-sidebar { display: none; }
+
+  .chat-main {
+    height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+
+  .chat-messages { padding: 12px 12px 8px; }
+  .chat-bubble   { max-width: 85vw; }
+
+  .chat-bubble__text table { font-size: 11px; overflow-x: auto; display: block; }
+
+  .chat-input-wrap { padding: 8px 12px 12px; }
+
+  .chat-quick { gap: 6px; }
+  .chat-quick__btn { font-size: 12px; padding: 7px 12px; }
+}

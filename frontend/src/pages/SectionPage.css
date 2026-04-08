@@ -962,3 +962,54 @@
   .sp-status__score-wrap { display: none; }
   .sp-charts { grid-template-columns: 1fr; }
 }
+
+/* ══ Mobile — section pages ══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sp {
+    padding: 72px 14px 80px;
+    gap: 14px;
+  }
+
+  /* Status card — stack vertically */
+  .sp-status {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 18px 16px;
+    gap: 14px;
+    text-align: center;
+  }
+  .sp-status__icon   { display: none; }
+  .sp-status__meta   { text-align: center; }
+  .sp-status__center { padding: 8px 0; }
+  .sp-status__emoji  { font-size: 28px; }
+  .sp-status__headline { font-size: 20px; }
+  .sp-status__score-wrap {
+    justify-self: center;
+  }
+
+  /* Back button */
+  .sp-back { font-size: 13px; }
+
+  /* Issue cards */
+  .sp-issue { padding: 14px; }
+  .sp-issue__footer { flex-direction: column; gap: 10px; }
+  .sp-issue__btn { width: 100%; justify-content: center; }
+
+  /* Protection areas — 1 column */
+  .sp-areas { grid-template-columns: 1fr; }
+
+  /* Charts — 1 column */
+  .sp-charts { grid-template-columns: 1fr; overflow-x: auto; }
+  .sp-chart-card { padding: 14px; }
+
+  /* Devices table — scroll horizontally */
+  .sp-dev-table { overflow-x: auto; }
+  .sp-dev-table__head,
+  .sp-dev-row { min-width: 560px; }
+
+  /* Stats row */
+  .sp-stats { grid-template-columns: 1fr 1fr; }
+
+  /* All-clear */
+  .sp-allclear { padding: 20px 14px; }
+}

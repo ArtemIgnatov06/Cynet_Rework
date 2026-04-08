@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import { NotesProvider, useNotes } from "./context/NotesContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import NoteWidget from "./components/NoteWidget";
 import Dashboard from "./pages/Dashboard";
 import EndpointsPage      from "./pages/EndpointsPage";
@@ -60,6 +61,7 @@ function NotesOverlay() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ThemeProvider>
       <NotesProvider>
         <Navbar />
         <main>
@@ -78,6 +80,7 @@ export default function App() {
         <ChatWidget />
         <NotesOverlay />
       </NotesProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
