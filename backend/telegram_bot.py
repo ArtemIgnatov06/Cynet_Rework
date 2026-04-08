@@ -27,6 +27,7 @@ from pathlib import Path
 
 import httpx
 from dotenv import load_dotenv
+import telegram
 from telegram import BotCommand, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
@@ -404,6 +405,15 @@ async def _post_init(app: Application) -> None:
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
+async def _error_handler(_update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    err = context.error
+    if isinstance(err, telegram.error.Conflict):
+        print("[bot] Conflict: another instance is running, waiting 30s before retry…")
+        await asyncio.sleep(30)
+    else:
+        print(f"[bot] Unhandled error: {err}")
+
+
 def main() -> None:
     app = (
         Application.builder()
@@ -418,6 +428,7 @@ def main() -> None:
     app.add_handler(CommandHandler("status", cmd_status))
     app.add_handler(CommandHandler("alerts", cmd_alerts))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.add_error_handler(_error_handler)
 
     print(f"[bot] Starting Cynet Telegram Bot…")
     app.run_polling(drop_pending_updates=True)
