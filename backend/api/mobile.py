@@ -8,68 +8,44 @@ def _build_mobile_payload(mode: str = "manageable", count: int = 6) -> dict:
     mode = apply_global_mode(mode).lower().strip()
     count = max(3, min(count, 10))
 
-    devices = [
-        {
-            "id": 1,
-            "name": "iPhone 15 Pro - Adeline",
-            "ip": "10.20.1.14",
-            "os": "ios",
-            "group": "Executive",
-            "lastSeen": "2m ago",
-            "status": "ok",
-        },
-        {
-            "id": 2,
-            "name": "Samsung S24 - Finance",
-            "ip": "10.20.1.18",
-            "os": "android",
-            "group": "Finance",
-            "lastSeen": "5m ago",
-            "status": "ok",
-        },
-        {
-            "id": 3,
-            "name": "iPad Air - Support",
-            "ip": "10.20.1.27",
-            "os": "ios",
-            "group": "Support",
-            "lastSeen": "11m ago",
-            "status": "inactive",
-        },
-        {
-            "id": 4,
-            "name": "Pixel 8 - DevOps",
-            "ip": "10.20.1.33",
-            "os": "android",
-            "group": "Engineering",
-            "lastSeen": "1m ago",
-            "status": "ok",
-        },
-        {
-            "id": 5,
-            "name": "iPhone 13 - Sales",
-            "ip": "10.20.1.41",
-            "os": "ios",
-            "group": "Sales",
-            "lastSeen": "7m ago",
-            "status": "faulty",
-        },
-        {
-            "id": 6,
-            "name": "Galaxy Tab - Ops",
-            "ip": "10.20.1.52",
-            "os": "android",
-            "group": "Operations",
-            "lastSeen": "4m ago",
-            "status": "ok",
-        },
-    ][:count]
+    if mode == "safe":
+        devices = [
+            {"id": 1, "name": "iPhone 15 Pro - Adeline", "ip": "10.20.1.14", "os": "ios",     "group": "Executive",    "lastSeen": "2m ago",  "status": "ok"},
+            {"id": 2, "name": "Samsung S24 - Finance",   "ip": "10.20.1.18", "os": "android", "group": "Finance",      "lastSeen": "5m ago",  "status": "ok"},
+            {"id": 3, "name": "iPad Air - Support",      "ip": "10.20.1.27", "os": "ios",     "group": "Support",      "lastSeen": "3m ago",  "status": "ok"},
+            {"id": 4, "name": "Pixel 8 - DevOps",        "ip": "10.20.1.33", "os": "android", "group": "Engineering",  "lastSeen": "1m ago",  "status": "ok"},
+            {"id": 5, "name": "iPhone 13 - Sales",       "ip": "10.20.1.41", "os": "ios",     "group": "Sales",        "lastSeen": "4m ago",  "status": "ok"},
+            {"id": 6, "name": "Galaxy Tab - Ops",        "ip": "10.20.1.52", "os": "android", "group": "Operations",   "lastSeen": "6m ago",  "status": "ok"},
+        ]
+        health_score = 100
+    elif mode == "critical":
+        devices = [
+            {"id": 1, "name": "iPhone 15 Pro - Adeline", "ip": "10.20.1.14", "os": "ios",     "group": "Executive",    "lastSeen": "2m ago",  "status": "ok"},
+            {"id": 2, "name": "Samsung S24 - Finance",   "ip": "10.20.1.18", "os": "android", "group": "Finance",      "lastSeen": "5m ago",  "status": "faulty"},
+            {"id": 3, "name": "iPad Air - Support",      "ip": "10.20.1.27", "os": "ios",     "group": "Support",      "lastSeen": "11m ago", "status": "inactive"},
+            {"id": 4, "name": "Pixel 8 - DevOps",        "ip": "10.20.1.33", "os": "android", "group": "Engineering",  "lastSeen": "1m ago",  "status": "faulty"},
+            {"id": 5, "name": "iPhone 13 - Sales",       "ip": "10.20.1.41", "os": "ios",     "group": "Sales",        "lastSeen": "7m ago",  "status": "faulty"},
+            {"id": 6, "name": "Galaxy Tab - Ops",        "ip": "10.20.1.52", "os": "android", "group": "Operations",   "lastSeen": "4m ago",  "status": "ok"},
+        ]
+        health_score = 55
+    else:  # manageable
+        devices = [
+            {"id": 1, "name": "iPhone 15 Pro - Adeline", "ip": "10.20.1.14", "os": "ios",     "group": "Executive",    "lastSeen": "2m ago",  "status": "ok"},
+            {"id": 2, "name": "Samsung S24 - Finance",   "ip": "10.20.1.18", "os": "android", "group": "Finance",      "lastSeen": "5m ago",  "status": "ok"},
+            {"id": 3, "name": "iPad Air - Support",      "ip": "10.20.1.27", "os": "ios",     "group": "Support",      "lastSeen": "11m ago", "status": "inactive"},
+            {"id": 4, "name": "Pixel 8 - DevOps",        "ip": "10.20.1.33", "os": "android", "group": "Engineering",  "lastSeen": "1m ago",  "status": "ok"},
+            {"id": 5, "name": "iPhone 13 - Sales",       "ip": "10.20.1.41", "os": "ios",     "group": "Sales",        "lastSeen": "7m ago",  "status": "faulty"},
+            {"id": 6, "name": "Galaxy Tab - Ops",        "ip": "10.20.1.52", "os": "android", "group": "Operations",   "lastSeen": "4m ago",  "status": "ok"},
+        ]
+        health_score = 70
+
+    devices = devices[:count]
 
     protected_categories = [
         {"name": "Malicious Apps", "open": 1 if mode != "safe" else 0, "closed": 8},
-        {"name": "Compliance", "open": 1 if mode == "critical" else 0, "closed": 6},
-        {"name": "Network Abuse", "open": 1 if mode == "critical" else 0, "closed": 4},
-        {"name": "Device Health", "open": 1 if mode != "safe" else 0, "closed": 7},
+        {"name": "Compliance",     "open": 1 if mode == "critical" else 0, "closed": 6},
+        {"name": "Network Abuse",  "open": 1 if mode == "critical" else 0, "closed": 4},
+        {"name": "Device Health",  "open": 1 if mode != "safe" else 0, "closed": 7},
     ]
 
     if mode == "critical":
@@ -120,6 +96,7 @@ def _build_mobile_payload(mode: str = "manageable", count: int = 6) -> dict:
 
     return {
         "mobile": {
+            "health_score": health_score,
             "devices": devices,
             "protectedCategories": protected_categories,
             "alertsOverTime": alerts_over_time,

@@ -160,9 +160,7 @@ export default function MobilePage() {
   if (error) return <div className="sp-center sp-center--err">Failed to load mobile data: {error}</div>;
   if (!data) return <div className="sp-center">Mobile section not found.</div>;
 
-  const allOk = (data.devices ?? []).every((d) => d.status === "ok");
-  const hasFaulty = (data.devices ?? []).some((d) => d.status === "faulty");
-  const score = allOk ? 97 : hasFaulty ? 70 : 84;
+  const score = data.health_score ?? ((data.devices ?? []).every((d) => d.status === "ok") ? 97 : (data.devices ?? []).some((d) => d.status === "faulty") ? 70 : 84);
   const sectionStatus = score >= 90 ? "ok" : score >= 70 ? "warning" : "critical";
 
   const sectionObj = {

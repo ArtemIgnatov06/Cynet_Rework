@@ -127,12 +127,7 @@ export function useSecurityData(pollMs = 30000) {
         normalizeSection({
           id: "mobile",
           label: "Mobile",
-          score:
-            (mobile?.devices ?? []).every((d) => d.status === "ok")
-              ? 97
-              : (mobile?.devices ?? []).some((d) => d.status === "faulty")
-              ? 70
-              : 84,
+          score: mobile?.health_score ?? ((mobile?.devices ?? []).every((d) => d.status === "ok") ? 97 : (mobile?.devices ?? []).some((d) => d.status === "faulty") ? 70 : 84),
           issues: (mobile?.protectedCategories ?? [])
             .filter((cat) => cat.open > 0)
             .map((cat, idx) => ({
