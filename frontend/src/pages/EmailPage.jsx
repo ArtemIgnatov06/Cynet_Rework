@@ -4,6 +4,8 @@ import { IcoChevronLeft } from "./GenericSectionPage";
 import "./SectionPage.css";
 import "./NetworkPage.css";
 
+const API_URL = (import.meta.env.VITE_AGENT_URL || "http://localhost:8000").replace(/\/$/, "");
+
 const SEV_CFG = {
   critical: { color: "#ef4444", bg: "rgba(239,68,68,0.12)", label: "Critical" },
   warning: { color: "#f59e0b", bg: "rgba(245,158,11,0.12)", label: "Warning" },
@@ -76,7 +78,7 @@ export default function EmailPage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch("http://127.0.0.1:8000/api/email?mode=critical&count=3");
+        const response = await fetch(`${API_URL}/api/email?mode=critical&count=3`);
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }

@@ -4,6 +4,8 @@ import { IcoChevronLeft } from "./GenericSectionPage";
 import "./SectionPage.css";
 import "./NetworkPage.css";
 
+const API_URL = (import.meta.env.VITE_AGENT_URL || "http://localhost:8000").replace(/\/$/, "");
+
 function UBARow({ row }) {
   return (
     <div className="sp-dev-row">
@@ -107,7 +109,7 @@ export default function UsersPage() {
         setError("");
 
         const response = await fetch(
-          "http://127.0.0.1:8000/api/users?mode=critical&count=5"
+          `${API_URL}/api/users?mode=critical&count=5`
         );
 
         if (!response.ok) {

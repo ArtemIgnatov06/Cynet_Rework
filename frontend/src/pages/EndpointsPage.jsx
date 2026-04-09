@@ -10,6 +10,8 @@ import GenericSectionPage, {
 } from "./GenericSectionPage";
 import "./SectionPage.css";
 
+const API_URL = (import.meta.env.VITE_AGENT_URL || "http://localhost:8000").replace(/\/$/, "");
+
 const OsWindows = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
     <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.549H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-13.051-1.851" />
@@ -152,7 +154,7 @@ export default function EndpointsPage() {
         if (!section) setLoading(true);
         setError("");
 
-        const response = await fetch("http://127.0.0.1:8000/api/endpoints?mode=manageable&count=6");
+        const response = await fetch(`${API_URL}/api/endpoints?mode=manageable&count=6`);
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }

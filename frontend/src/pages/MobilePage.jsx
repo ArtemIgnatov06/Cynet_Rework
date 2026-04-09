@@ -8,6 +8,8 @@ import GenericSectionPage, {
 } from "./GenericSectionPage";
 import "./SectionPage.css";
 
+const API_URL = (import.meta.env.VITE_AGENT_URL || "http://localhost:8000").replace(/\/$/, "");
+
 const OsAndroid = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
     <path d="M7 9a1 1 0 0 0-1 1v7a3 3 0 0 0 3 3h1v3h2v-3h2v3h2v-3h1a3 3 0 0 0 3-3v-7a1 1 0 0 0-1-1H7zm8.53-4.84 1.3-1.86-.82-.57-1.4 2A6.96 6.96 0 0 0 12 3c-.92 0-1.8.18-2.61.51l-1.4-2-.82.57 1.3 1.86A7 7 0 0 0 5 9h14a7 7 0 0 0-3.47-4.84zM9.5 6.5A.75.75 0 1 1 9.5 5a.75.75 0 0 1 0 1.5zm5 0A.75.75 0 1 1 14.5 5a.75.75 0 0 1 0 1.5z" />
@@ -140,7 +142,7 @@ export default function MobilePage() {
         if (!data) setLoading(true);
         setError("");
 
-        const response = await fetch("http://127.0.0.1:8000/api/mobile?mode=manageable&count=6");
+        const response = await fetch(`${API_URL}/api/mobile?mode=manageable&count=6`);
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
