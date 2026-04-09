@@ -160,12 +160,7 @@ export function useSecurityData(pollMs = 30000) {
         normalizeSection({
           id: "network",
           label: "Network",
-          score:
-            network?.attack_level === "green"
-              ? 100
-              : network?.attack_level === "yellow"
-              ? 76
-              : 42,
+          score: network?.health_score ?? (network?.attack_level === "green" ? 100 : network?.attack_level === "yellow" ? 76 : 42),
           issues: (network?.incidents ?? [])
             .filter((item) => item.severity !== "safe")
             .map((item) => ({
@@ -179,12 +174,7 @@ export function useSecurityData(pollMs = 30000) {
         normalizeSection({
           id: "saasCloud",
           label: "SaaS & Cloud",
-          score:
-            saas?.status === "ok"
-              ? 100
-              : saas?.status === "warning"
-              ? 76
-              : 42,
+          score: saas?.healthScore ?? (saas?.status === "ok" ? 100 : saas?.status === "warning" ? 76 : 42),
           issues: Object.values(saas?.datasets ?? {})
             .flatMap((dataset) => dataset?.issues ?? [])
             .map((item) => ({

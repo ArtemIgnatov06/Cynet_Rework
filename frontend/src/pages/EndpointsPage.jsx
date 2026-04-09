@@ -169,9 +169,9 @@ export default function EndpointsPage() {
     };
 
     loadEndpoints();
-    const id = setInterval(loadEndpoints, 2000);
+    const id = setInterval(loadEndpoints, 10000);
     return () => clearInterval(id);
-  }, [section]);
+  }, []);
 
   if (loading && !section) return <div className="sp-center">Loading…</div>;
   if (error) return <div className="sp-center sp-center--err">Failed to load endpoints: {error}</div>;

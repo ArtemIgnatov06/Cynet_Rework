@@ -139,15 +139,9 @@ export default function MobilePage() {
   useEffect(() => {
     const loadMobileData = async () => {
       try {
-        if (!data) setLoading(true);
         setError("");
-
         const response = await fetch(`${API_URL}/api/mobile?mode=manageable&count=6`);
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const result = await response.json();
         setData(result.mobile);
       } catch (err) {
@@ -158,18 +152,42 @@ export default function MobilePage() {
     };
 
     loadMobileData();
-    const id = setInterval(loadMobileData, 2000);
+    const id = setInterval(loadMobileData, 10000);
     return () => clearInterval(id);
-  }, [data]);
+  }, []);
 
   if (loading && !data) return <div className="sp-center">Loading…</div>;
-  if (error) {
-    return <div className="sp-center sp-center--err">Failed to load mobile data: {error}</div>;
-  }
+  if (error) return <div className="sp-center sp-center--err">Failed to load mobile data: {error}</div>;
   if (!data) return <div className="sp-center">Mobile section not found.</div>;
 
+  const allOk = (data.devices ?? []).every((d) => d.status === "ok");
+  const hasFaulty = (data.devices ?? []).some((d) => d.status === "faulty");
+  const score = allOk ? 97 : hasFaulty ? 70 : 84;
+  const sectionStatus = score >= 90 ? "ok" : score >= 70 ? "warning" : "critical";
+
+  const sectionObj = {
+    id: "mobile",
+    label: "Mobile",
+    score,
+    status: sectionStatus,
+    issues: (data.protectedCategories ?? [])
+      .filter((cat) => cat.open > 0)
+      .map((cat, idx) => ({
+        id: `mobile-${idx}`,
+        title: `${cat.name} issue`,
+        description: `${cat.open} mobile finding${cat.open > 1 ? "s" : ""} require review.`,
+        severity: cat.open >= 2 ? "critical" : "medium",
+        route: "/section/mobile",
+        detectedAt: new Date().toISOString(),
+      })),
+    subModules: (data.protectedCategories ?? []).map((cat) => ({
+      name: cat.name,
+      ok: cat.open === 0,
+    })),
+  };
+
   return (
-    <GenericSectionPage section={{ id: "mobile", title: "Mobile" }}>
+    <GenericSectionPage section={sectionObj}>
       {(data.protectedCategories?.length > 0 || data.alertsOverTime) && (
         <div className="sp-details-wrap">
           <button
