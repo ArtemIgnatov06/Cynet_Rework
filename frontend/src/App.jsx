@@ -24,7 +24,7 @@ const SECTION_PAGES = {
   endpoints: EndpointsPage,
   users:     UsersPage,
   email:     EmailPage,
-  saas:      SaasPage,
+  saasCloud: SaasPage,
   mobile:    MobilePage,
 };
 
