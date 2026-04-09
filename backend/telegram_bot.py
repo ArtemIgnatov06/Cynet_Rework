@@ -44,10 +44,17 @@ _env = ROOT / ".env"
 _env_agent = ROOT / "agent" / ".env"
 load_dotenv(_env if _env.exists() else _env_agent)
 
-TOKEN       = os.getenv("TELEGRAM_BOT_TOKEN", "")
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
-POLL_SECS   = int(os.getenv("ALERT_POLL_SECS", "60"))
-SUBS_FILE   = ROOT / "telegram_subs.json"
+TOKEN         = os.getenv("TELEGRAM_BOT_TOKEN", "")
+BACKEND_URL   = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
+POLL_SECS     = int(os.getenv("ALERT_POLL_SECS", "60"))
+SUBS_FILE     = ROOT / "telegram_subs.json"
+# Comma-separated chat IDs to always notify (survives Railway redeploys)
+# Set TELEGRAM_CHAT_IDS=123456,789012 in Railway env vars
+_HARDCODED_SUBS = {
+    int(cid.strip())
+    for cid in os.getenv("TELEGRAM_CHAT_IDS", "").split(",")
+    if cid.strip().lstrip("-").isdigit()
+}
 
 if not TOKEN:
     sys.exit(
@@ -59,12 +66,13 @@ if not TOKEN:
 
 # ── Subscription store ────────────────────────────────────────────────────────
 def _load_subs() -> set[int]:
+    loaded: set[int] = set()
     if SUBS_FILE.exists():
         try:
-            return set(json.loads(SUBS_FILE.read_text()))
+            loaded = set(json.loads(SUBS_FILE.read_text()))
         except Exception:
             pass
-    return set()
+    return loaded | _HARDCODED_SUBS
 
 def _save_subs(subs: set[int]) -> None:
     SUBS_FILE.write_text(json.dumps(list(subs)))
@@ -363,20 +371,24 @@ async def _check_regime(app: Application) -> None:
             r = await client.get(f"{BACKEND_URL}/api/regime")
             r.raise_for_status()
             regime = r.json().get("mode")
+    except Exception as e:
+        print(f"[bot] Regime fetch error: {e}")
+        return
 
-        if regime == _known_regime:
-            return
-        prev = _known_regime
-        _known_regime = regime
+    if regime == _known_regime:
+        return
+    prev = _known_regime
+    _known_regime = regime
 
-        if prev is None:
-            print(f"[regime] Initialized to '{regime}'")
-            return
+    if prev is None:
+        print(f"[regime] Initialized to '{regime}'")
+        return
 
-        print(f"[regime] Changed {prev} → {regime}, notifying {len(SUBS)} subscribers")
-        text = _REGIME_MSG.get(regime, f"📊 *Dashboard mode changed:* `{regime}`")
+    print(f"[regime] Changed {prev} → {regime}, notifying {len(SUBS)} subscribers")
+    text = _REGIME_MSG.get(regime, f"📊 *Dashboard mode changed:* `{regime}`")
 
-        # Also fetch current status and append it
+    # Try to append live status — if it fails, still send the notification
+    try:
         sections = await _fetch_sections()
         if sections:
             by_incidents: dict[str, list] = {}
@@ -391,11 +403,10 @@ async def _check_regime(app: Application) -> None:
                 status_lines.append(_section_status_line(name, sec, incs))
 
             text += "\n\n" + "\n".join(status_lines)
-
-        await _broadcast(app, text)
-
     except Exception as e:
-        print(f"[bot] Regime check error: {e}")
+        print(f"[bot] Status fetch error (notification still sent): {e}")
+
+    await _broadcast(app, text)
 
 
 async def _alert_poller(app: Application) -> None:
