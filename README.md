@@ -1,1 +1,1 @@
-Зфтлщм lox ebanий
+Cynet website rework by Ignatov Artem and Vadim Pankov
