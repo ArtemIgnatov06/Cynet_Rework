@@ -57,7 +57,7 @@ if not TOKEN:
         "   Get a token from @BotFather on Telegram.\n"
     )
 
-# ── Subscription store (persisted to JSON) ────────────────────────────────────
+# ── Subscription store ────────────────────────────────────────────────────────
 def _load_subs() -> set[int]:
     if SUBS_FILE.exists():
         try:
@@ -71,31 +71,42 @@ def _save_subs(subs: set[int]) -> None:
 
 SUBS: set[int] = _load_subs()
 
-# ── Backend API helpers ───────────────────────────────────────────────────────
-_API_SECTIONS = ["devices", "network", "users", "email", "cloud", "mobile", "saasCloud"]
+# ── Backend API ───────────────────────────────────────────────────────────────
+# (endpoint_name, response_key)
+_SECTIONS = [
+    ("email",     "email"),
+    ("endpoints", "endpoints"),
+    ("mobile",    "mobile"),
+    ("users",     "users"),
+    ("network",   "network"),
+    ("saasCloud", "saasCloud"),
+]
 
 async def _fetch_sections() -> list[dict]:
-    """Call all /api/* endpoints in parallel and return their payloads."""
+    """Fetch all section endpoints, unwrap nested response, return flat list."""
     async with httpx.AsyncClient(timeout=12) as client:
         tasks = [
-            client.get(f"{BACKEND_URL}/api/{s}?mode=critical&count=20")
-            for s in _API_SECTIONS
+            client.get(f"{BACKEND_URL}/api/{ep}?mode=critical&count=20")
+            for ep, _ in _SECTIONS
         ]
         responses = await asyncio.gather(*tasks, return_exceptions=True)
 
     results = []
-    for name, resp in zip(_API_SECTIONS, responses):
+    for (name, key), resp in zip(_SECTIONS, responses):
         if isinstance(resp, Exception):
+            print(f"[bot] fetch error {name}: {resp}")
             continue
         try:
-            results.append({"_section": name, **resp.json()})
-        except Exception:
-            pass
+            body = resp.json()
+            # Unwrap: {"network": {"incidents": [...]}} → {"_section": "network", "incidents": [...]}
+            inner = body.get(key, body)
+            results.append({"_section": name, **inner})
+        except Exception as e:
+            print(f"[bot] parse error {name}: {e}")
     return results
 
 
 async def _ask_agent(query: str) -> str:
-    """POST query to the AI agent and return the answer text."""
     async with httpx.AsyncClient(timeout=30) as client:
         r = await client.post(
             f"{BACKEND_URL}/chat",
@@ -105,75 +116,106 @@ async def _ask_agent(query: str) -> str:
         return r.json().get("answer", "No answer returned.")
 
 
-# ── Alert helpers ─────────────────────────────────────────────────────────────
+# ── Incident extraction ───────────────────────────────────────────────────────
 _SEV_EMOJI = {
     "critical": "🔴",
     "high":     "🟠",
     "medium":   "🟡",
     "low":      "🔵",
+    "warning":  "🟡",
 }
 
 def _iter_incidents(sections: list[dict]):
-    """Yield (section_name, incident_dict) for every incident across all sections."""
+    """Yield (section_name, incident_dict) for every active incident."""
     for sec in sections:
         name = sec["_section"]
-        for key in ("incidents", "events", "alerts", "issues"):
-            items = sec.get(key)
-            if not isinstance(items, list):
-                continue
-            for item in items:
-                if isinstance(item, dict):
+
+        if name == "email":
+            for item in sec.get("blocked_emails", []):
+                if item.get("severity") not in ("safe",):
+                    yield name, {
+                        "id": item.get("id", item.get("subject", "")),
+                        "title": item.get("subject", "Email threat"),
+                        "description": item.get("reason", ""),
+                        "severity": item.get("severity", "warning"),
+                    }
+
+        elif name in ("endpoints", "mobile"):
+            for cat in sec.get("protectedCategories", []):
+                if cat.get("open", 0) > 0:
+                    yield name, {
+                        "id": f"{name}-{cat['name']}",
+                        "title": f"{cat['name']} issue",
+                        "description": f"{cat['open']} open finding(s)",
+                        "severity": "critical" if cat.get("open", 0) >= 2 else "medium",
+                    }
+
+        elif name == "users":
+            for item in sec.get("issues", []):
+                yield name, item
+
+        elif name == "network":
+            for item in sec.get("incidents", []):
+                if item.get("severity") not in ("safe",):
                     yield name, item
+
+        elif name == "saasCloud":
+            for ds in sec.get("datasets", {}).values():
+                for item in ds.get("issues", []):
+                    yield name, {
+                        "id": item.get("id", ""),
+                        "title": item.get("subject", "SaaS issue"),
+                        "description": f"{item.get('service', '')} · {item.get('category', '')}",
+                        "severity": item.get("severity", "medium"),
+                    }
 
 
 def _incident_fp(section: str, item: dict) -> str:
-    """Unique fingerprint for deduplication."""
     uid = item.get("id") or f"{item.get('title','')}|{item.get('type','')}"
     return f"{section}:{uid}"
 
 
 def _fmt_incident(section: str, item: dict) -> str:
-    sev   = item.get("severity", "").lower()
+    sev   = str(item.get("severity", "")).lower()
     emoji = _SEV_EMOJI.get(sev, "⚠️")
     title = item.get("title") or item.get("type") or "Alert"
-    desc  = item.get("description") or item.get("target") or item.get("details") or ""
-    ts    = item.get("timestamp") or item.get("time") or ""
-    if ts:
-        try:
-            ts = datetime.fromisoformat(ts.replace("Z", "+00:00")).strftime("%d %b %H:%M")
-            ts = f" · _{ts}_"
-        except Exception:
-            ts = ""
-    return f"{emoji} *{sev.upper()}* · {section.upper()}{ts}\n*{title}*\n{desc}".strip()
+    desc  = item.get("description") or item.get("target") or ""
+    return f"{emoji} *{sev.upper()}* · {section.upper()}\n*{title}*\n{desc}".strip()
 
 
-def _section_status_line(section: str, incidents: list[dict]) -> str:
+# ── Status helpers ────────────────────────────────────────────────────────────
+def _get_score(sec: dict) -> int | None:
+    return sec.get("health_score") or sec.get("healthScore")
+
+def _section_status_line(name: str, sec: dict, incidents: list[dict]) -> str:
+    score = _get_score(sec)
+    score_str = f" · {score}%" if score is not None else ""
+
     if not incidents:
-        return f"✅ *{section.capitalize()}* — secure"
+        return f"✅ *{name.capitalize()}*{score_str} — secure"
+
     counts: dict[str, int] = {}
     for inc in incidents:
-        s = inc.get("severity", "unknown").lower()
+        s = str(inc.get("severity", "unknown")).lower()
         counts[s] = counts.get(s, 0) + 1
+
     worst = next(
         (s for s in ("critical", "high", "medium", "low") if counts.get(s)),
         "unknown",
     )
     emoji = _SEV_EMOJI.get(worst, "⚠️")
     detail = ", ".join(f"{v} {k}" for k, v in counts.items())
-    return f"{emoji} *{section.capitalize()}* — {detail}"
+    return f"{emoji} *{name.capitalize()}*{score_str} — {detail}"
 
-
-# ── Known-alerts tracker (for change notifications) ───────────────────────────
-_known_fps: set[str] = set()
-_poller_initialized = False
 
 # ── Regime tracker ────────────────────────────────────────────────────────────
 _known_regime: str | None = None
 
 _REGIME_MSG = {
     "all_good":   "✅ *TEST MODE: ALL GOOD*\nAll systems switched to secure — no active threats.",
+    "none":       "✅ *TEST MODE: ALL GOOD*\nAll systems switched to secure — no active threats.",
     "all_yellow": "🟠 *TEST MODE: WARNING*\nMultiple systems showing warning status. Review recommended.",
-    "all_red":    "🔴 *TEST MODE: CRITICAL*\nCritical threats detected across all systems! Immediate action required.",
+    "all_red":    "🔴 *TEST MODE: CRITICAL*\nCritical threats detected across all systems\\! Immediate action required.",
     "realistic":  "📊 *TEST MODE: RESET*\nDashboard returned to realistic data mode.",
 }
 
@@ -219,34 +261,35 @@ async def cmd_status(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     sections = await _fetch_sections()
     if not sections:
         await msg.edit_text(
-            "❌ Could not reach the backend.\nMake sure `uvicorn main:app` is running."
+            "❌ Could not reach the backend.\nMake sure the backend is running."
         )
         return
 
-    # Group incidents by section
-    by_section: dict[str, list[dict]] = {s["_section"]: [] for s in sections}
+    by_section: dict[str, dict] = {s["_section"]: s for s in sections}
+    by_incidents: dict[str, list] = {s["_section"]: [] for s in sections}
     for sname, inc in _iter_incidents(sections):
-        by_section.setdefault(sname, []).append(inc)
+        by_incidents.setdefault(sname, []).append(inc)
 
     total_crit = sum(
         1 for _, inc in _iter_incidents(sections)
-        if inc.get("severity", "").lower() == "critical"
+        if str(inc.get("severity", "")).lower() == "critical"
     )
     total_high = sum(
         1 for _, inc in _iter_incidents(sections)
-        if inc.get("severity", "").lower() == "high"
+        if str(inc.get("severity", "")).lower() == "high"
     )
 
     ts = datetime.now().strftime("%d %b %Y, %H:%M")
     lines = [f"🛡 *Security Overview*", f"_{ts}_\n"]
-    for sname, incs in by_section.items():
-        lines.append(_section_status_line(sname, incs))
+
+    for name, _ in _SECTIONS:
+        sec = by_section.get(name, {"_section": name})
+        incs = by_incidents.get(name, [])
+        lines.append(_section_status_line(name, sec, incs))
 
     overall = (
-        "🔴 *Overall: CRITICAL*"
-        if total_crit
-        else "🟠 *Overall: WARNING*"
-        if total_high
+        "🔴 *Overall: CRITICAL*" if total_crit
+        else "🟠 *Overall: WARNING*" if total_high
         else "✅ *Overall: SECURE*"
     )
     lines.append(f"\n{overall}")
@@ -264,7 +307,7 @@ async def cmd_alerts(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     alert_blocks = [
         _fmt_incident(sname, inc)
         for sname, inc in _iter_incidents(sections)
-        if inc.get("severity", "").lower() in ("critical", "high", "medium")
+        if str(inc.get("severity", "")).lower() in ("critical", "high", "medium")
     ]
 
     if not alert_blocks:
@@ -281,7 +324,6 @@ async def cmd_alerts(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def handle_message(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
-    """Proxy any text message to the AI agent."""
     query = (update.message.text or "").strip()
     if not query:
         return
@@ -301,9 +343,20 @@ async def handle_message(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None
         await typing.edit_text(f"❌ Agent error: {e}")
 
 
-# ── Background alert poller ───────────────────────────────────────────────────
+# ── Background poller ─────────────────────────────────────────────────────────
+_known_fps: set[str] = set()
+_poller_initialized = False
+
+
+async def _broadcast(app: Application, text: str) -> None:
+    for cid in list(SUBS):
+        try:
+            await app.bot.send_message(cid, text, parse_mode=ParseMode.MARKDOWN)
+        except Exception as e:
+            print(f"[bot] Failed to notify {cid}: {e}")
+
+
 async def _check_regime(app: Application) -> None:
-    """Check if the dashboard test regime changed and notify subscribers."""
     global _known_regime
     try:
         async with httpx.AsyncClient(timeout=8) as client:
@@ -311,26 +364,35 @@ async def _check_regime(app: Application) -> None:
             r.raise_for_status()
             regime = r.json().get("mode")
 
-        print(f"[regime] current={regime} known={_known_regime} subs={len(SUBS)}")
-
         if regime == _known_regime:
             return
         prev = _known_regime
         _known_regime = regime
 
-        # Skip notification on very first check (just initializing)
         if prev is None:
-            print(f"[regime] Initialized to '{regime}', skipping first notification")
+            print(f"[regime] Initialized to '{regime}'")
             return
 
         print(f"[regime] Changed {prev} → {regime}, notifying {len(SUBS)} subscribers")
         text = _REGIME_MSG.get(regime, f"📊 *Dashboard mode changed:* `{regime}`")
-        for cid in list(SUBS):
-            try:
-                await app.bot.send_message(cid, text, parse_mode=ParseMode.MARKDOWN)
-                print(f"[regime] Notified {cid}")
-            except Exception as e:
-                print(f"[bot] Failed to notify {cid}: {e}")
+
+        # Also fetch current status and append it
+        sections = await _fetch_sections()
+        if sections:
+            by_incidents: dict[str, list] = {}
+            for sname, inc in _iter_incidents(sections):
+                by_incidents.setdefault(sname, []).append(inc)
+
+            by_section = {s["_section"]: s for s in sections}
+            status_lines = []
+            for name, _ in _SECTIONS:
+                sec = by_section.get(name, {"_section": name})
+                incs = by_incidents.get(name, [])
+                status_lines.append(_section_status_line(name, sec, incs))
+
+            text += "\n\n" + "\n".join(status_lines)
+
+        await _broadcast(app, text)
 
     except Exception as e:
         print(f"[bot] Regime check error: {e}")
@@ -340,18 +402,14 @@ async def _alert_poller(app: Application) -> None:
     global _known_fps, _poller_initialized
 
     print(f"[bot] Alert poller started — checking every {POLL_SECS}s")
-
-    # Regime check runs every 10s regardless of POLL_SECS
     regime_tick = 0
 
     while True:
         await asyncio.sleep(10)
         regime_tick += 10
 
-        # Always check regime every 10 seconds
         await _check_regime(app)
 
-        # Check real alerts at full POLL_SECS interval
         if regime_tick < POLL_SECS:
             continue
         regime_tick = 0
@@ -375,7 +433,6 @@ async def _alert_poller(app: Application) -> None:
             if not new_fps or not SUBS:
                 continue
 
-            # Build notification
             new_incs = [
                 (sname, inc)
                 for sname, inc in _iter_incidents(sections)
@@ -387,11 +444,7 @@ async def _alert_poller(app: Application) -> None:
             if len(text) > 4000:
                 text = text[:3990] + "\n…_(truncated)_"
 
-            for cid in list(SUBS):
-                try:
-                    await app.bot.send_message(cid, text, parse_mode=ParseMode.MARKDOWN)
-                except Exception as e:
-                    print(f"[bot] Failed to notify {cid}: {e}")
+            await _broadcast(app, text)
 
         except Exception as e:
             print(f"[bot] Poller error: {e}")
@@ -409,16 +462,17 @@ async def _post_init(app: Application) -> None:
     print(f"[bot] Connected to backend: {BACKEND_URL}")
 
 
-# ── Entry point ───────────────────────────────────────────────────────────────
+# ── Error handler ─────────────────────────────────────────────────────────────
 async def _error_handler(_update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     err = context.error
     if isinstance(err, telegram.error.Conflict):
-        print("[bot] Conflict: another instance is running, waiting 30s before retry…")
+        print("[bot] Conflict: another instance is running, waiting 30s…")
         await asyncio.sleep(30)
     else:
         print(f"[bot] Unhandled error: {err}")
 
 
+# ── Entry point ───────────────────────────────────────────────────────────────
 def main() -> None:
     app = (
         Application.builder()
