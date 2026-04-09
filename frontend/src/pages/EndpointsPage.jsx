@@ -177,8 +177,35 @@ export default function EndpointsPage() {
   if (error) return <div className="sp-center sp-center--err">Failed to load endpoints: {error}</div>;
   if (!section) return <div className="sp-center">Endpoints not found.</div>;
 
+  const allOk = section.devices?.every((d) => d.status === "ok");
+  const hasFaulty = section.devices?.some((d) => d.status === "faulty");
+  const score = allOk ? 98 : hasFaulty ? 68 : 82;
+  const sectionStatus = score >= 90 ? "ok" : score >= 70 ? "warning" : "critical";
+
+  const sectionObj = {
+    id: "endpoints",
+    label: "Endpoints",
+    score,
+    status: sectionStatus,
+    activeEndpoints: section.devices?.length ?? 0,
+    issues: (section.protectedCategories ?? [])
+      .filter((cat) => cat.open > 0)
+      .map((cat, idx) => ({
+        id: `endpoints-${idx}`,
+        title: `${cat.name} exposure detected`,
+        description: `${cat.open} open endpoint finding${cat.open > 1 ? "s" : ""}.`,
+        severity: cat.open >= 2 ? "critical" : "medium",
+        route: "/section/endpoints",
+        detectedAt: new Date().toISOString(),
+      })),
+    subModules: (section.protectedCategories ?? []).map((cat) => ({
+      name: cat.name,
+      ok: cat.open === 0,
+    })),
+  };
+
   return (
-    <GenericSectionPage section={{ id: "endpoints", title: "Endpoints" }}>
+    <GenericSectionPage section={sectionObj}>
       {(section.protectedCategories?.length > 0 || section.alertsOverTime) && (
         <div className="sp-details-wrap">
           <button
